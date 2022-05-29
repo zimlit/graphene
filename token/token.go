@@ -52,7 +52,7 @@ func (t Token) String() string {
 	fmt.Fprintln(&str, ",")
 	fmt.Fprint(&str, "   ", "line:", t.Line)
 	fmt.Fprintln(&str, ",")
-	fmt.Fprint(&str, "   ", "col:", t.Col)
+	fmt.Fprintln(&str, "   ", "col:", t.Col)
 	fmt.Fprintln(&str, "}")
 
 	return str.String()
