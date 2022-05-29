@@ -3,6 +3,7 @@ package lexer
 import (
 	"fmt"
 	"strings"
+	"unicode"
 	"zimlit/graphene/token"
 
 	"github.com/fatih/color"
@@ -14,6 +15,8 @@ type tmpLexErr struct {
 	msg   string
 	fname string
 }
+
+func (l *tmpLexErr) Error() string { return "" }
 
 type LexErr struct {
 	col     int
@@ -86,6 +89,15 @@ func (l *Lexer) newTmpErr(msg string) tmpLexErr {
 	}
 }
 
+func (l *Lexer) newTmpErrAt(msg string, col int) tmpLexErr {
+	return tmpLexErr{
+		col:   col,
+		line:  l.line,
+		msg:   msg,
+		fname: l.fname,
+	}
+}
+
 func (l *Lexer) newLexErr(tmp tmpLexErr) LexErr {
 	return LexErr{
 		col:     tmp.col,
@@ -105,6 +117,15 @@ func (l *Lexer) newToken(literal string, kind token.TokenKind) token.Token {
 	}
 }
 
+func (l *Lexer) newTokenAt(literal string, kind token.TokenKind, col int) token.Token {
+	return token.Token{
+		Kind:    kind,
+		Literal: literal,
+		Line:    l.line,
+		Col:     col,
+	}
+}
+
 func (l *Lexer) peek() rune {
 	return l.source[l.pos]
 }
@@ -113,6 +134,44 @@ func (l *Lexer) advance() {
 	l.lineStr += string(l.source[l.pos])
 	l.pos++
 	l.col++
+}
+
+func (l *Lexer) num() (*token.Token, *tmpLexErr) {
+	val := ""
+	dot_count := 0
+	col := l.col
+	for l.pos < len(l.source) {
+		if !(unicode.IsDigit(l.peek()) || l.peek() == '.') {
+			break
+		}
+		val += string(l.peek())
+		if l.peek() == '.' {
+			dot_count++
+		}
+
+		l.pos++
+		l.col++
+		if !(unicode.IsDigit(l.peek()) || l.peek() == '.') {
+			break
+		}
+		l.lineStr += string(l.source[l.pos-1])
+	}
+
+	l.pos--
+	l.col--
+
+	var tok token.Token
+
+	if dot_count > 1 {
+		e := l.newTmpErrAt("to many dots in number literal", col)
+		return nil, &e
+	} else if dot_count == 1 {
+		tok = l.newTokenAt(val, token.FLOAT, col)
+	} else {
+		tok = l.newTokenAt(val, token.INT, col)
+	}
+
+	return &tok, nil
 }
 
 func (l *Lexer) Lex() ([]token.Token, LexErrs) {
@@ -137,6 +196,18 @@ func (l *Lexer) Lex() ([]token.Token, LexErrs) {
 			}
 			l.line++
 		default:
+			if unicode.IsDigit(l.peek()) {
+				t, err := l.num()
+
+				if err != nil {
+					tmps = append(tmps, *err)
+				} else {
+					toks = append(toks, *t)
+				}
+
+				break
+			}
+
 			tmps = append(tmps, l.newTmpErr(fmt.Sprintf("Unexpected character '%s'", string(l.peek()))))
 		}
 	}
