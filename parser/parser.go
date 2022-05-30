@@ -123,7 +123,10 @@ func (p *Parser) unary() (ast.Expr, error) {
 
 func (p *Parser) primary() (ast.Expr, error) {
 	if p.match(token.INT, token.FLOAT) {
-		return ast.NewLiteral(p.previous().Literal), nil
+		if p.previous().Kind == token.INT {
+			return ast.NewLiteral(p.previous().Literal, p.previous().Kind), nil
+
+		}
 	}
 
 	if p.match(token.LPAREN) {
