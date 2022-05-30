@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"zimlit/graphene/lexer"
+	"zimlit/graphene/parser"
 
 	"github.com/alecthomas/kong"
 )
@@ -40,12 +41,18 @@ func (r *ReplCmd) Run(xtx *Context) error {
 		}
 
 		l := lexer.NewLexer(line, "stdin")
-		toks, errs := l.Lex()
+		toks, lines, errs := l.Lex()
 		if errs != nil {
 			fmt.Print(errs.Error())
+		} else {
+			p := parser.NewParser(toks, lines)
+			tree, errs := p.Parse()
+			if errs != nil {
+				fmt.Println(errs)
+			} else {
+				fmt.Println(tree)
+			}
 		}
-
-		fmt.Println(toks)
 	}
 }
 
