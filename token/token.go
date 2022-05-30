@@ -16,6 +16,13 @@ const (
 	SLASH
 	LPAREN
 	RPAREN
+	INTK
+	FLOATK
+	LET
+	EQ
+	IDENT
+	COLON
+	NIL
 )
 
 func (t TokenKind) String() string {
@@ -36,6 +43,20 @@ func (t TokenKind) String() string {
 		return "LPAREN"
 	case RPAREN:
 		return "RPAREN"
+	case INTK:
+		return "INTK"
+	case FLOATK:
+		return "FLOATK"
+	case LET:
+		return "LET"
+	case EQ:
+		return "EQ"
+	case IDENT:
+		return "IDENT"
+	case COLON:
+		return "COLON"
+	case NIL:
+		return "NIL"
 	default:
 		return "INVALID"
 	}

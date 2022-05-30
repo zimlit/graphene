@@ -61,16 +61,17 @@ func (l *LexErrs) Error() string {
 }
 
 type Lexer struct {
-	col     int
-	pos     int
-	line    int
-	lineStr string
-	source  []rune
-	fname   string
+	col      int
+	pos      int
+	line     int
+	lineStr  string
+	source   []rune
+	fname    string
+	keywords map[string]token.TokenKind
 }
 
 func NewLexer(source string, fname string) Lexer {
-	return Lexer{
+	l := Lexer{
 		col:     1,
 		pos:     0,
 		line:    1,
@@ -78,6 +79,13 @@ func NewLexer(source string, fname string) Lexer {
 		source:  []rune(source),
 		fname:   fname,
 	}
+	l.keywords = make(map[string]token.TokenKind)
+	l.keywords["int"] = token.INTK
+	l.keywords["float"] = token.FLOATK
+	l.keywords["let"] = token.LET
+	l.keywords["nil"] = token.NIL
+
+	return l
 }
 
 func (l *Lexer) newTmpErr(msg string) tmpLexErr {
@@ -130,6 +138,10 @@ func (l *Lexer) peek() rune {
 	return l.source[l.pos]
 }
 
+func (l *Lexer) peekNext() rune {
+	return l.source[l.pos+1]
+}
+
 func (l *Lexer) advance() {
 	l.lineStr += string(l.source[l.pos])
 	l.pos++
@@ -140,25 +152,16 @@ func (l *Lexer) num() (*token.Token, *tmpLexErr) {
 	val := ""
 	dot_count := 0
 	col := l.col
-	for l.pos < len(l.source) {
-		if !(unicode.IsDigit(l.peek()) || l.peek() == '.') {
-			break
-		}
+	for ; l.pos < len(l.source); l.advance() {
 		val += string(l.peek())
 		if l.peek() == '.' {
 			dot_count++
 		}
 
-		l.pos++
-		l.col++
-		if !(unicode.IsDigit(l.peek()) || l.peek() == '.') {
+		if !(unicode.IsDigit(l.peekNext()) || l.peekNext() == '.') {
 			break
 		}
-		l.lineStr += string(l.source[l.pos-1])
 	}
-
-	l.pos--
-	l.col--
 
 	var tok token.Token
 
@@ -172,6 +175,24 @@ func (l *Lexer) num() (*token.Token, *tmpLexErr) {
 	}
 
 	return &tok, nil
+}
+
+func (l *Lexer) ident() token.Token {
+	val := ""
+	col := l.col
+
+	for ; l.pos < len(l.source); l.advance() {
+		val += string(l.peek())
+
+		if !(unicode.IsLetter(l.peekNext()) || unicode.IsDigit(l.peekNext()) || l.peekNext() == '_') {
+			break
+		}
+	}
+	t := l.keywords[val]
+	if t == 0 {
+		return l.newTokenAt(val, token.IDENT, col)
+	}
+	return l.newTokenAt(val, t, col)
 }
 
 func (l *Lexer) Lex() ([]token.Token, []string, LexErrs) {
@@ -193,6 +214,10 @@ func (l *Lexer) Lex() ([]token.Token, []string, LexErrs) {
 			toks = append(toks, l.newToken("(", token.LPAREN))
 		case ')':
 			toks = append(toks, l.newToken(")", token.RPAREN))
+		case '=':
+			toks = append(toks, l.newToken("=", token.EQ))
+		case ':':
+			toks = append(toks, l.newToken(":", token.COLON))
 		case ' ':
 		case '\t':
 		case '\n':
@@ -212,10 +237,14 @@ func (l *Lexer) Lex() ([]token.Token, []string, LexErrs) {
 					toks = append(toks, *t)
 				}
 
-				break
+			} else if unicode.IsLetter(l.peek()) || l.peek() == '_' {
+				t := l.ident()
+				toks = append(toks, t)
+			} else {
+				tmps = append(tmps, l.newTmpErr(fmt.Sprintf("Unexpected character '%s'", string(l.peek()))))
+
 			}
 
-			tmps = append(tmps, l.newTmpErr(fmt.Sprintf("Unexpected character '%s'", string(l.peek()))))
 		}
 	}
 
