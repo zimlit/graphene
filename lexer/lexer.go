@@ -174,10 +174,11 @@ func (l *Lexer) num() (*token.Token, *tmpLexErr) {
 	return &tok, nil
 }
 
-func (l *Lexer) Lex() ([]token.Token, LexErrs) {
+func (l *Lexer) Lex() ([]token.Token, []string, LexErrs) {
 	toks := []token.Token{}
 	var errs LexErrs = nil
 	tmps := []tmpLexErr{}
+	lines := []string{}
 	for ; l.pos < len(l.source); l.advance() {
 		switch l.peek() {
 		case '+':
@@ -188,13 +189,19 @@ func (l *Lexer) Lex() ([]token.Token, LexErrs) {
 			toks = append(toks, l.newToken("*", token.STAR))
 		case '/':
 			toks = append(toks, l.newToken("/", token.SLASH))
+		case '(':
+			toks = append(toks, l.newToken("(", token.LPAREN))
+		case ')':
+			toks = append(toks, l.newToken(")", token.RPAREN))
 		case ' ':
 		case '\t':
 		case '\n':
 			for _, err := range tmps {
 				errs = append(errs, l.newLexErr(err))
 			}
+			lines = append(lines, l.lineStr)
 			l.line++
+			l.lineStr = ""
 		default:
 			if unicode.IsDigit(l.peek()) {
 				t, err := l.num()
@@ -213,7 +220,7 @@ func (l *Lexer) Lex() ([]token.Token, LexErrs) {
 	}
 
 	if errs != nil {
-		return nil, errs
+		return nil, nil, errs
 	}
-	return toks, nil
+	return toks, lines, nil
 }

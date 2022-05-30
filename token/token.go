@@ -14,6 +14,8 @@ const (
 	MINUS
 	STAR
 	SLASH
+	LPAREN
+	RPAREN
 )
 
 func (t TokenKind) String() string {
@@ -29,7 +31,11 @@ func (t TokenKind) String() string {
 	case STAR:
 		return "STAR"
 	case SLASH:
-		return "STAR"
+		return "SLASH"
+	case LPAREN:
+		return "LPAREN"
+	case RPAREN:
+		return "RPAREN"
 	default:
 		return "INVALID"
 	}
