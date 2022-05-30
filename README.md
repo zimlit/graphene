@@ -109,7 +109,7 @@ Here's a blank template to get started: To avoid retyping too much info. Do a se
 ### Prerequisites
 
 This is an example of how to list things you need to use the software and how to install them.
-* golang
+* golang 1.18 or later
 * git
 
 ### Installation
