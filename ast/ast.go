@@ -73,6 +73,13 @@ func (l Literal) String() string {
 	return fmt.Sprintf("(%s %s)", l.Kind, l.Value)
 }
 
+type Visitor[R any] interface {
+	visitBinary(b Binary) R
+	visitUnary(u Unary) R
+	visitLiteral(l Literal) R
+	visitGrouping(g Grouping) R
+}
+
 func (l Literal) Accept(v Visitor[any]) any {
 	return v.visitLiteral(l)
 }
