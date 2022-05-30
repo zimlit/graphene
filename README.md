@@ -22,8 +22,6 @@
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 [![MIT License][license-shield]][license-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
-
 
 
 <!-- PROJECT LOGO -->
@@ -139,8 +137,8 @@ This is an example of how to list things you need to use the software and how to
 
 <!-- ROADMAP -->
 <!-- ## Roadmap -->
-
-See the [open issues](https://github.com/zimlit/graphene/issues) for a full list of proposed features (and known issues).
+<!-- 
+See the [open issues](https://github.com/zimlit/graphene/issues) for a full list of proposed features (and known issues). -->
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -176,7 +174,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Your Name - zimlit2010@gmail.com
+Devin Rockwell - zimlit2010@gmail.com
 
 Project Link: [https://github.com/zimlit/graphene](https://github.com/zimlit/graphene)
 
