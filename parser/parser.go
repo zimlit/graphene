@@ -53,6 +53,14 @@ func (p *Parser) match(types ...token.TokenKind) bool {
 	return false
 }
 
+func (p *Parser) consume(message string, types ...token.TokenKind) (bool, error) {
+	if p.match(types...) {
+		return true, nil
+	} else {
+		return false, errors.New(message)
+	}
+}
+
 func (p *Parser) synchronize() {
 	p.advance()
 
@@ -69,6 +77,35 @@ func (p *Parser) Parse() (ast.Expr, error) {
 }
 
 func (p *Parser) expression() (ast.Expr, error) {
+	return p.varDecl()
+}
+
+func (p *Parser) varDecl() (ast.Expr, error) {
+	if p.match(token.LET) {
+		c, err := p.consume("expect variable name", token.IDENT)
+		if !c {
+			return nil, err
+		}
+		name := p.previous()
+		c, err = p.consume("expect type anotation", token.COLON)
+		if !c {
+			return nil, err
+		}
+		c, err = p.consume("expect type name", token.INTK, token.FLOATK)
+		if !c {
+			return nil, err
+		}
+		kind := ast.NewKind(p.previous().Kind)
+		var value ast.Expr = ast.NewLiteral("nil", token.NIL)
+		if p.match(token.EQ) {
+			value, err = p.expression()
+			if err != nil {
+				return nil, err
+			}
+		}
+		return ast.NewVarDecl(name.Literal, kind, value), nil
+	}
+
 	return p.term()
 }
 
@@ -122,11 +159,9 @@ func (p *Parser) unary() (ast.Expr, error) {
 }
 
 func (p *Parser) primary() (ast.Expr, error) {
-	if p.match(token.INT, token.FLOAT) {
-		if p.previous().Kind == token.INT {
-			return ast.NewLiteral(p.previous().Literal, p.previous().Kind), nil
+	if p.match(token.INT, token.FLOAT, token.NIL) {
+		return ast.NewLiteral(p.previous().Literal, p.previous().Kind), nil
 
-		}
 	}
 
 	if p.match(token.LPAREN) {
@@ -134,8 +169,9 @@ func (p *Parser) primary() (ast.Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		if !p.match(token.RPAREN) {
-			return nil, errors.New("expect ')' after expression")
+		c, err := p.consume("expect closing paren", token.RPAREN)
+		if !c {
+			return nil, err
 		}
 		return ast.NewGrouping(expr), nil
 	}

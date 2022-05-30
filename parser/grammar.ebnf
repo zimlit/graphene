@@ -1,7 +1,9 @@
 program = expression* ;
 
-expression = term ;
+expression = varDecl ;
 
+varDecl = "let" IDENT ":" TYPE "=" expression
+        | term ;
 term    = factor ( ( "-" | "+" ) factor )* ;
 factor  = unary ( ( "/" | "*" ) unary )* ;
 unary   = ( "-" ) unary 

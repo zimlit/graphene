@@ -5,6 +5,34 @@ import (
 	"zimlit/graphene/token"
 )
 
+type ValueKind uint8
+
+const (
+	INT   = iota
+	FLOAT = iota
+)
+
+func NewKind(t token.TokenKind) ValueKind {
+	switch t {
+	case token.INTK:
+		return INT
+	case token.FLOATK:
+		return FLOAT
+	}
+	panic("unreachable")
+}
+
+func (k ValueKind) String() string {
+	switch k {
+	case INT:
+		return "INT"
+	case FLOAT:
+		return "FLOAT"
+	default:
+		return "INVALID"
+	}
+}
+
 type Expr interface {
 	expr()
 	String() string
@@ -73,6 +101,14 @@ func (l Literal) String() string {
 	return fmt.Sprintf("(%s %s)", l.Kind, l.Value)
 }
 
+type Visitor[R any] interface {
+	visitBinary(b Binary) R
+	visitUnary(u Unary) R
+	visitLiteral(l Literal) R
+	visitGrouping(g Grouping) R
+	visitVarDecl(v VarDecl) R
+}
+
 func (l Literal) Accept(v Visitor[any]) any {
 	return v.visitLiteral(l)
 }
@@ -96,4 +132,27 @@ func (g Grouping) Accept(v Visitor[any]) any {
 
 func NewGrouping(inner Expr) Grouping {
 	return Grouping{inner}
+}
+
+type VarDecl struct {
+	Name  string
+	Kind  ValueKind
+	Value Expr
+}
+
+func (v VarDecl) expr() {}
+func (v VarDecl) String() string {
+	return fmt.Sprintf("(let %s %s %s)", v.Name, v.Kind.String(), v.Value.String())
+}
+
+func (va VarDecl) Accept(v Visitor[any]) any {
+	return v.visitVarDecl
+}
+
+func NewVarDecl(name string, kind ValueKind, value Expr) VarDecl {
+	return VarDecl{
+		Name:  name,
+		Kind:  kind,
+		Value: value,
+	}
 }

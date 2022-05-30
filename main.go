@@ -45,6 +45,7 @@ func (r *ReplCmd) Run(xtx *Context) error {
 		if errs != nil {
 			fmt.Print(errs.Error())
 		} else {
+			fmt.Println(toks)
 			p := parser.NewParser(toks, lines)
 			tree, errs := p.Parse()
 			if errs != nil {
