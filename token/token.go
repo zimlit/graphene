@@ -28,35 +28,35 @@ const (
 func (t TokenKind) String() string {
 	switch t {
 	case INT:
-		return "INT"
+		return "integer literal"
 	case FLOAT:
-		return "FLOAT"
+		return "float literal"
 	case PLUS:
-		return "PLUS"
+		return "+"
 	case MINUS:
-		return "MINUS"
+		return "-"
 	case STAR:
-		return "STAR"
+		return "*"
 	case SLASH:
-		return "SLASH"
+		return "/"
 	case LPAREN:
-		return "LPAREN"
+		return "("
 	case RPAREN:
-		return "RPAREN"
+		return ")"
 	case INTK:
-		return "INTK"
+		return "int"
 	case FLOATK:
-		return "FLOATK"
+		return "float"
 	case LET:
-		return "LET"
+		return "let"
 	case EQ:
-		return "EQ"
+		return "="
 	case IDENT:
-		return "IDENT"
+		return "identifier"
 	case COLON:
-		return "COLON"
+		return ":"
 	case NIL:
-		return "NIL"
+		return "nil"
 	default:
 		return "INVALID"
 	}
