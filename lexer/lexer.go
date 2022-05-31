@@ -53,8 +53,7 @@ type LexErrs []LexErr
 func (l *LexErrs) Error() string {
 	var str strings.Builder
 	for _, err := range *l {
-		fmt.Fprint(&str, err.Error())
-		fmt.Fprintln(&str, "")
+		fmt.Fprintln(&str, err.Error())
 	}
 
 	return str.String()
@@ -84,6 +83,8 @@ func NewLexer(source string, fname string) Lexer {
 	l.keywords["float"] = token.FLOATK
 	l.keywords["let"] = token.LET
 	l.keywords["nil"] = token.NIL
+	l.keywords["if"] = token.IF
+	l.keywords["else"] = token.ELSE
 
 	return l
 }

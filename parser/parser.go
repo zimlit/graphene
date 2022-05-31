@@ -9,6 +9,18 @@ import (
 	"github.com/fatih/color"
 )
 
+type ParseError []error
+
+func (p ParseError) Error() string {
+	var str strings.Builder
+
+	for _, err := range p {
+		fmt.Fprintln(&str, err.Error())
+	}
+
+	return str.String()
+}
+
 type MsgErr struct {
 	msg     string
 	line    int
@@ -216,8 +228,23 @@ func (p *Parser) synchronize() {
 	}
 }
 
-func (p *Parser) Parse() (ast.Expr, error) {
-	return p.expression()
+func (p *Parser) Parse() ([]ast.Expr, error) {
+	exprs := []ast.Expr{}
+	var errs ParseError = nil
+
+	for p.pos < len(p.tokens) {
+		expr, err := p.expression()
+		if err != nil {
+			errs = append(errs, err)
+		}
+		exprs = append(exprs, expr)
+	}
+
+	if errs != nil {
+		return nil, errs
+	}
+
+	return exprs, nil
 }
 
 func (p *Parser) expression() (ast.Expr, error) {

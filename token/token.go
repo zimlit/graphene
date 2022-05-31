@@ -23,6 +23,8 @@ const (
 	IDENT
 	COLON
 	NIL
+	IF
+	ELSE
 )
 
 func (t TokenKind) String() string {
@@ -57,6 +59,10 @@ func (t TokenKind) String() string {
 		return ":"
 	case NIL:
 		return "nil"
+	case IF:
+		return "if"
+	case ELSE:
+		return "else"
 	default:
 		return "INVALID"
 	}
