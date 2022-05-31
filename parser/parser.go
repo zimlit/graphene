@@ -83,13 +83,14 @@ func (u UnexpectedTokenErr) Error() string {
 	return str.String()
 }
 
-func newUnexpectedTokenErr(got *token.Token, expected []token.TokenKind, lineStr string, line int, col int) UnexpectedTokenErr {
+func newUnexpectedTokenErr(got *token.Token, expected []token.TokenKind, lineStr string, line int, col int, fname string) UnexpectedTokenErr {
 	return UnexpectedTokenErr{
 		got:      got,
 		expected: expected,
 		lineStr:  lineStr,
 		line:     line,
 		col:      col,
+		fname:    fname,
 	}
 }
 
@@ -151,9 +152,9 @@ func (p *Parser) consume(types ...token.TokenKind) (bool, error) {
 	} else {
 		t := p.peek()
 		if t == nil {
-			return false, newUnexpectedTokenErr(p.peek(), types, p.lines[p.previous().Line-1], p.previous().Line, p.previous().Col)
+			return false, newUnexpectedTokenErr(p.peek(), types, p.lines[p.previous().Line-1], p.previous().Line, p.previous().Col, p.fname)
 		}
-		return false, newUnexpectedTokenErr(p.peek(), types, p.lines[p.peek().Line-1], p.peek().Line, p.peek().Col)
+		return false, newUnexpectedTokenErr(p.peek(), types, p.lines[p.peek().Line-1], p.peek().Line, p.peek().Col, p.fname)
 	}
 }
 
