@@ -98,7 +98,7 @@ type Literal struct {
 
 func (l Literal) expr() {}
 func (l Literal) String() string {
-	return fmt.Sprintf("(%s %s)", l.Kind, l.Value)
+	return fmt.Sprint(l.Value)
 }
 
 type Visitor[R any] interface {

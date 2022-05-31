@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 	"zimlit/graphene/ast"
@@ -9,6 +8,47 @@ import (
 
 	"github.com/fatih/color"
 )
+
+type MsgErr struct {
+	msg     string
+	line    int
+	col     int
+	lineStr string
+	fname   string
+}
+
+func (m MsgErr) Error() string {
+	var str strings.Builder
+	r := color.New(color.FgHiRed, color.Bold).FprintfFunc()
+	w := color.New(color.FgHiWhite, color.Bold).FprintfFunc()
+	b := color.New(color.FgHiBlue, color.Bold).FprintfFunc()
+
+	r(&str, "error")
+	fmt.Fprint(&str, ": ")
+	w(&str, "%s\n", m.msg)
+	b(&str, " --> ")
+	fmt.Fprintf(&str, "%s:%d:%d\n", m.fname, m.line, m.col)
+	b(&str, "  |\n")
+	b(&str, "%d | ", m.line)
+	fmt.Fprintln(&str, m.lineStr)
+	b(&str, "  |")
+	for i := 0; i < m.col; i++ {
+		fmt.Fprint(&str, " ")
+	}
+	r(&str, "^ %s\n", m.msg)
+
+	return str.String()
+}
+
+func newMsgErr(msg string, line int, col int, lineStr string, fname string) MsgErr {
+	return MsgErr{
+		msg:     msg,
+		line:    line,
+		col:     col,
+		lineStr: lineStr,
+		fname:   fname,
+	}
+}
 
 type UnexpectedTokenErr struct {
 	got      *token.Token
@@ -123,8 +163,15 @@ func (p *Parser) peek() *token.Token {
 	return &p.tokens[p.pos]
 }
 
-func (p *Parser) previous() token.Token {
-	return p.tokens[p.pos-1]
+func (p *Parser) previous() *token.Token {
+	if p.pos > len(p.tokens) {
+		return nil
+	} else if len(p.tokens) == 0 {
+		return nil
+	} else if p.pos == 0 {
+		return p.peek()
+	}
+	return &p.tokens[p.pos-1]
 }
 
 func (p *Parser) check(t token.TokenKind) bool {
@@ -218,7 +265,7 @@ func (p *Parser) term() (ast.Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		expr = ast.NewBinary(expr, operator, right)
+		expr = ast.NewBinary(expr, *operator, right)
 	}
 
 	return expr, nil
@@ -236,7 +283,7 @@ func (p *Parser) factor() (ast.Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		expr = ast.NewBinary(expr, operator, right)
+		expr = ast.NewBinary(expr, *operator, right)
 	}
 
 	return expr, nil
@@ -249,14 +296,14 @@ func (p *Parser) unary() (ast.Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		return ast.NewUnary(operator, right), nil
+		return ast.NewUnary(*operator, right), nil
 	}
 
 	return p.primary()
 }
 
 func (p *Parser) primary() (ast.Expr, error) {
-	if p.match(token.INT, token.FLOAT, token.NIL) {
+	if p.match(token.INT, token.FLOAT, token.NIL, token.IDENT) {
 		return ast.NewLiteral(p.previous().Literal, p.previous().Kind), nil
 
 	}
@@ -273,5 +320,13 @@ func (p *Parser) primary() (ast.Expr, error) {
 		return ast.NewGrouping(expr), nil
 	}
 
-	return nil, errors.New("expect expression")
+	if p.peek() == nil {
+		if p.previous() == nil {
+			return nil, newMsgErr("Expected expression", 1, 1, "", p.fname)
+		}
+		return nil, newMsgErr("Expected expression", p.previous().Line, p.previous().Col+1, p.lines[p.previous().Line-1], p.fname)
+	} else {
+		return nil, newMsgErr("Expected expression", p.peek().Line, p.peek().Col, p.lines[p.peek().Line-1], p.fname)
+	}
+
 }
