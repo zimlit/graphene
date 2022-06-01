@@ -174,13 +174,25 @@ func (i IfExpr) String() string {
 	for _, b := range i.Body {
 		fmt.Fprint(&str, b)
 	}
-	fmt.Fprint(&str, ") ")
+	if i.Else_ifs == nil {
+		fmt.Fprint(&str, ")")
+	} else {
+		fmt.Fprint(&str, ") ")
+	}
+
 	for _, e := range i.Else_ifs {
 		fmt.Fprintf(&str, "%s ", e.String())
 	}
-	for _, e := range i.Else {
-		fmt.Fprintf(&str, "%s ", e.String())
+	if i.Else != nil {
+		fmt.Fprint(&str, "(")
 	}
+	for _, e := range i.Else {
+		fmt.Fprintf(&str, "%s", e.String())
+	}
+	if i.Else != nil {
+		fmt.Fprint(&str, ")")
+	}
+	fmt.Fprint(&str, ")")
 
 	return str.String()
 }

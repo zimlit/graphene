@@ -293,6 +293,9 @@ func (p *Parser) ifExpr() (ast.Expr, error) {
 			var ebody []ast.Expr
 			for {
 				e, err := p.expression()
+				if p.peek() == nil {
+					return nil, newUnexpectedTokenErr(nil, []token.TokenKind{token.END}, p.lines[p.previous().Line-1], p.previous().Line, p.previous().Col, p.fname)
+				}
 				if err != nil {
 					if p.peek().Kind == token.ELSE || p.peek().Kind == token.ELSEIF || p.peek().Kind == token.END {
 						break
@@ -311,6 +314,9 @@ func (p *Parser) ifExpr() (ast.Expr, error) {
 		if p.match(token.ELSE) {
 			for {
 				e, err := p.expression()
+				if p.peek() == nil {
+					return nil, newUnexpectedTokenErr(nil, []token.TokenKind{token.END}, p.lines[p.previous().Line-1], p.previous().Line, p.previous().Col, p.fname)
+				}
 				if err != nil {
 					if p.peek().Kind == token.ELSE || p.peek().Kind == token.ELSEIF || p.peek().Kind == token.END {
 						break
