@@ -307,11 +307,17 @@ func (p *Parser) ifExpr() (ast.Expr, error) {
 			else_ifs = append(else_ifs, else_if)
 		}
 
-		var el ast.Expr
+		var el []ast.Expr
 		if p.match(token.ELSE) {
-			el, err = p.expression()
-			if err != nil {
-				return nil, err
+			for {
+				e, err := p.expression()
+				if err != nil {
+					if p.peek().Kind == token.ELSE || p.peek().Kind == token.ELSEIF || p.peek().Kind == token.END {
+						break
+					}
+					return nil, err
+				}
+				el = append(el, e)
 			}
 		}
 		c, err := p.consume(token.END)
