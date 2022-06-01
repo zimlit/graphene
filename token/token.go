@@ -20,11 +20,20 @@ const (
 	FLOATK
 	LET
 	EQ
+	EQEQ
+	NEQ
+	LESS
+	GREATER
+	LESSEQ
+	GREATEREQ
+	BANG
 	IDENT
 	COLON
 	NIL
 	IF
 	ELSE
+	ELSEIF
+	END
 )
 
 func (t TokenKind) String() string {
@@ -53,6 +62,18 @@ func (t TokenKind) String() string {
 		return "let"
 	case EQ:
 		return "="
+	case EQEQ:
+		return "=="
+	case NEQ:
+		return "!="
+	case LESS:
+		return "<"
+	case GREATER:
+		return ">"
+	case LESSEQ:
+		return "<="
+	case GREATEREQ:
+		return ">="
 	case IDENT:
 		return "identifier"
 	case COLON:
@@ -63,6 +84,10 @@ func (t TokenKind) String() string {
 		return "if"
 	case ELSE:
 		return "else"
+	case ELSEIF:
+		return "else if"
+	case END:
+		return "end"
 	default:
 		return "INVALID"
 	}

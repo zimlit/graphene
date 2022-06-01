@@ -222,7 +222,16 @@ func (p *Parser) synchronize() {
 
 	for p.pos < len(p.tokens) {
 		switch p.peek().Kind {
-
+		case token.LET:
+			return
+		case token.IF:
+			return
+		case token.ELSE:
+			return
+		case token.ELSEIF:
+			return
+		case token.END:
+			return
 		}
 		p.advance()
 	}
@@ -236,6 +245,7 @@ func (p *Parser) Parse() ([]ast.Expr, error) {
 		expr, err := p.expression()
 		if err != nil {
 			errs = append(errs, err)
+			p.synchronize()
 		}
 		exprs = append(exprs, expr)
 	}
@@ -248,6 +258,71 @@ func (p *Parser) Parse() ([]ast.Expr, error) {
 }
 
 func (p *Parser) expression() (ast.Expr, error) {
+	return p.ifExpr()
+}
+
+func (p *Parser) ifExpr() (ast.Expr, error) {
+	if p.match(token.IF) {
+		cond, err := p.expression()
+		if err != nil {
+			return nil, err
+		}
+		var body []ast.Expr
+		for {
+			b, err := p.expression()
+			if err != nil {
+				if p.peek() == nil {
+					return nil, newUnexpectedTokenErr(nil, []token.TokenKind{token.END}, p.lines[p.previous().Line-1], p.previous().Line, p.previous().Col, p.fname)
+				}
+				if p.peek().Kind == token.ELSE || p.peek().Kind == token.ELSEIF || p.peek().Kind == token.END {
+					break
+				}
+
+				return nil, err
+			}
+			body = append(body, b)
+		}
+
+		var else_ifs []ast.IfExpr
+		for p.match(token.ELSEIF) {
+			econd, err := p.expression()
+			if err != nil {
+				return nil, err
+			}
+
+			var ebody []ast.Expr
+			for {
+				e, err := p.expression()
+				if err != nil {
+					if p.peek().Kind == token.ELSE || p.peek().Kind == token.ELSEIF || p.peek().Kind == token.END {
+						break
+					}
+					return nil, err
+				}
+				ebody = append(ebody, e)
+			}
+
+			else_if := ast.NewIfExpr(econd, ebody, nil, nil)
+
+			else_ifs = append(else_ifs, else_if)
+		}
+
+		var el ast.Expr
+		if p.match(token.ELSE) {
+			el, err = p.expression()
+			if err != nil {
+				return nil, err
+			}
+		}
+		c, err := p.consume(token.END)
+		if !c {
+			return nil, err
+		}
+
+		return ast.NewIfExpr(cond, body, else_ifs, el), nil
+
+	}
+
 	return p.varDecl()
 }
 
@@ -277,7 +352,25 @@ func (p *Parser) varDecl() (ast.Expr, error) {
 		return ast.NewVarDecl(name.Literal, kind, value), nil
 	}
 
-	return p.term()
+	return p.comparison()
+}
+
+func (p *Parser) comparison() (ast.Expr, error) {
+	expr, err := p.term()
+	if err != nil {
+		return nil, err
+	}
+
+	for p.match(token.EQEQ, token.NEQ, token.LESS, token.LESSEQ, token.GREATER, token.GREATEREQ) {
+		operator := p.previous()
+		right, err := p.term()
+		if err != nil {
+			return nil, err
+		}
+		expr = ast.NewBinary(expr, *operator, right)
+	}
+
+	return expr, nil
 }
 
 func (p *Parser) term() (ast.Expr, error) {
@@ -317,7 +410,7 @@ func (p *Parser) factor() (ast.Expr, error) {
 }
 
 func (p *Parser) unary() (ast.Expr, error) {
-	if p.match(token.MINUS) {
+	if p.match(token.MINUS, token.BANG) {
 		operator := p.previous()
 		right, err := p.unary()
 		if err != nil {

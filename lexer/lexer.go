@@ -84,6 +84,7 @@ func NewLexer(source string, fname string) Lexer {
 	l.keywords["let"] = token.LET
 	l.keywords["nil"] = token.NIL
 	l.keywords["if"] = token.IF
+	l.keywords["end"] = token.END
 	l.keywords["else"] = token.ELSE
 
 	return l
@@ -149,6 +150,15 @@ func (l *Lexer) advance() {
 	l.col++
 }
 
+func (l *Lexer) match(c rune) bool {
+	if l.peekNext() == c {
+		l.advance()
+		return true
+	}
+
+	return false
+}
+
 func (l *Lexer) num() (*token.Token, *tmpLexErr) {
 	val := ""
 	dot_count := 0
@@ -189,6 +199,16 @@ func (l *Lexer) ident() token.Token {
 			break
 		}
 	}
+	if val == "else" {
+		if l.source[l.pos+2] == 'i' {
+			if l.source[l.pos+3] == 'f' {
+				l.advance()
+				l.advance()
+				l.advance()
+				return l.newTokenAt(val, token.ELSEIF, col)
+			}
+		}
+	}
 	t := l.keywords[val]
 	if t == 0 {
 		return l.newTokenAt(val, token.IDENT, col)
@@ -216,7 +236,29 @@ func (l *Lexer) Lex() ([]token.Token, []string, LexErrs) {
 		case ')':
 			toks = append(toks, l.newToken(")", token.RPAREN))
 		case '=':
-			toks = append(toks, l.newToken("=", token.EQ))
+			if l.match('=') {
+				toks = append(toks, l.newTokenAt("==", token.EQEQ, l.col-1))
+			} else {
+				toks = append(toks, l.newToken("=", token.EQ))
+			}
+		case '!':
+			if l.match('=') {
+				toks = append(toks, l.newTokenAt("!=", token.NEQ, l.col-1))
+			} else {
+				toks = append(toks, l.newToken("!", token.BANG))
+			}
+		case '<':
+			if l.match('=') {
+				toks = append(toks, l.newTokenAt("<=", token.LESSEQ, l.col-1))
+			} else {
+				toks = append(toks, l.newToken("<", token.LESS))
+			}
+		case '>':
+			if l.match('=') {
+				toks = append(toks, l.newTokenAt(">=", token.GREATEREQ, l.col-1))
+			} else {
+				toks = append(toks, l.newToken(">", token.GREATER))
+			}
 		case ':':
 			toks = append(toks, l.newToken(":", token.COLON))
 		case ' ':

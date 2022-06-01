@@ -1,11 +1,15 @@
 program = expression* ;
 
-expression = varDecl ;
+expression = if ;
+
+if = "if" expression expression* (("else if" expression expression*)*? "else" expression*)? "end"
+   | varDecl ;
 
 varDecl = "let" IDENT ":" TYPE "=" expression
-        | term ;
+        | comparison ;
+comparison = term ( ( "==" | "!=" | "<" | ">" | "<=" | ">=") term)*;
 term    = factor ( ( "-" | "+" ) factor )* ;
 factor  = unary ( ( "/" | "*" ) unary )* ;
-unary   = ( "-" ) unary 
+unary   = ( "-" | "!") unary 
         | primary ;
 primary = NUMBER | "(" expression ")" ;

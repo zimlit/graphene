@@ -2,6 +2,7 @@ package ast
 
 import (
 	"fmt"
+	"strings"
 	"zimlit/graphene/token"
 )
 
@@ -107,6 +108,7 @@ type Visitor[R any] interface {
 	visitLiteral(l Literal) R
 	visitGrouping(g Grouping) R
 	visitVarDecl(v VarDecl) R
+	visitIfExpr(v IfExpr) R
 }
 
 func (l Literal) Accept(v Visitor[any]) any {
@@ -146,7 +148,7 @@ func (v VarDecl) String() string {
 }
 
 func (va VarDecl) Accept(v Visitor[any]) any {
-	return v.visitVarDecl
+	return v.visitVarDecl(va)
 }
 
 func NewVarDecl(name string, kind ValueKind, value Expr) VarDecl {
@@ -154,5 +156,44 @@ func NewVarDecl(name string, kind ValueKind, value Expr) VarDecl {
 		Name:  name,
 		Kind:  kind,
 		Value: value,
+	}
+}
+
+type IfExpr struct {
+	Condition Expr
+	Body      []Expr
+	Else_ifs  []IfExpr
+	Else      Expr
+}
+
+func (i IfExpr) expr() {}
+func (i IfExpr) String() string {
+	var str strings.Builder
+
+	fmt.Fprintf(&str, "(if %s (", i.Condition.String())
+	for _, b := range i.Body {
+		fmt.Fprint(&str, b)
+	}
+	fmt.Fprint(&str, ") ")
+	for _, e := range i.Else_ifs {
+		fmt.Fprintf(&str, "%s ", e.String())
+	}
+	if i.Else != nil {
+		fmt.Fprintf(&str, "%s)", i.Else.String())
+	}
+
+	return str.String()
+}
+
+func (i IfExpr) Accept(v Visitor[any]) any {
+	return v.visitIfExpr(i)
+}
+
+func NewIfExpr(condition Expr, body []Expr, else_ifs []IfExpr, el Expr) IfExpr {
+	return IfExpr{
+		Condition: condition,
+		Body:      body,
+		Else_ifs:  else_ifs,
+		Else:      el,
 	}
 }
