@@ -364,7 +364,24 @@ func (p *Parser) varDecl() (ast.Expr, error) {
 		return ast.NewVarDecl(name.Literal, kind, value), nil
 	}
 
-	return p.comparison()
+	return p.equality()
+}
+
+func (p *Parser) equality() (ast.Expr, error) {
+	expr, err := p.comparison()
+	if err != nil {
+		return nil, err
+	}
+	for p.match(token.EQEQ, token.NEQ) {
+		operator := p.previous()
+		right, err := p.comparison()
+		if err != nil {
+			return nil, err
+		}
+		expr = ast.NewBinary(expr, *operator, right)
+	}
+
+	return expr, nil
 }
 
 func (p *Parser) comparison() (ast.Expr, error) {
@@ -373,7 +390,7 @@ func (p *Parser) comparison() (ast.Expr, error) {
 		return nil, err
 	}
 
-	for p.match(token.EQEQ, token.NEQ, token.LESS, token.LESSEQ, token.GREATER, token.GREATEREQ) {
+	for p.match(token.LESS, token.LESSEQ, token.GREATER, token.GREATEREQ) {
 		operator := p.previous()
 		right, err := p.term()
 		if err != nil {
