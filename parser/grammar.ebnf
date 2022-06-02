@@ -1,16 +1,18 @@
-program = expression* ;
+program    = expression* ;
 
 expression = if ;
 
-if = "if" expression expression* (("else if" expression expression*)*? "else" expression*)? "end"
-   | varDecl ;
+if         = "if" expression expression* (("else if" expression expression*)*? "else" expression*)? "end"
+           | varDecl ;
 
-varDecl = "let" "mut"? IDENT ":" TYPE "=" expression
-        | equality ;
-equality = comparison ( ( "!=" | "==" ) comparison )* ;
+varDecl    = "let" "mut"? IDENT ":" TYPE "=" expression
+           | assignment ;
+assignment = IDENT "=" expression
+           | equality;
+equality   = comparison ( ( "!=" | "==" ) comparison )* ;
 comparison = term ( ( | "<" | ">" | "<=" | ">=") term)*;
-term    = factor ( ( "-" | "+" ) factor )* ;
-factor  = unary ( ( "/" | "*" ) unary )* ;
-unary   = ( "-" | "!") unary 
-        | primary ;
-primary = NUMBER | "(" expression ")" ;
+term       = factor ( ( "-" | "+" ) factor )* ;
+factor     = unary ( ( "/" | "*" ) unary )* ;
+unary      = ( "-" | "!") unary 
+           | primary ;
+primary    = NUMBER | "(" expression ")" ;

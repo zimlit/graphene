@@ -109,6 +109,7 @@ type Visitor[R any] interface {
 	visitGrouping(g Grouping) R
 	visitVarDecl(v VarDecl) R
 	visitIfExpr(v IfExpr) R
+	visitAssignment(v Assignment) R
 }
 
 func (l Literal) Accept(v Visitor[any]) any {
@@ -213,5 +214,26 @@ func NewIfExpr(condition Expr, body []Expr, else_ifs []IfExpr, el []Expr) IfExpr
 		Body:      body,
 		Else_ifs:  else_ifs,
 		Else:      el,
+	}
+}
+
+type Assignment struct {
+	name  string
+	value Expr
+}
+
+func (a Assignment) expr() {}
+func (a Assignment) String() string {
+	return fmt.Sprintf("(= %s %s)", a.name, a.value.String())
+}
+
+func (a Assignment) Accept(v Visitor[any]) any {
+	return v.visitAssignment(a)
+}
+
+func NewAssignment(name string, value Expr) Assignment {
+	return Assignment{
+		name:  name,
+		value: value,
 	}
 }
