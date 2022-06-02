@@ -34,6 +34,7 @@ const (
 	ELSE
 	ELSEIF
 	END
+	MUT
 )
 
 func (t TokenKind) String() string {
@@ -88,6 +89,8 @@ func (t TokenKind) String() string {
 		return "else if"
 	case END:
 		return "end"
+	case MUT:
+		return "mut"
 	default:
 		return "INVALID"
 	}

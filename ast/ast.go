@@ -137,25 +137,31 @@ func NewGrouping(inner Expr) Grouping {
 }
 
 type VarDecl struct {
-	Name  string
-	Kind  ValueKind
-	Value Expr
+	Name   string
+	Kind   ValueKind
+	is_mut bool
+	Value  Expr
 }
 
 func (v VarDecl) expr() {}
 func (v VarDecl) String() string {
-	return fmt.Sprintf("(let %s %s %s)", v.Name, v.Kind.String(), v.Value.String())
+	if !v.is_mut {
+		return fmt.Sprintf("(let %s %s %s)", v.Name, v.Kind.String(), v.Value.String())
+	} else {
+		return fmt.Sprintf("(let mut %s %s %s)", v.Name, v.Kind.String(), v.Value.String())
+	}
 }
 
 func (va VarDecl) Accept(v Visitor[any]) any {
 	return v.visitVarDecl(va)
 }
 
-func NewVarDecl(name string, kind ValueKind, value Expr) VarDecl {
+func NewVarDecl(name string, kind ValueKind, value Expr, is_mut bool) VarDecl {
 	return VarDecl{
-		Name:  name,
-		Kind:  kind,
-		Value: value,
+		Name:   name,
+		Kind:   kind,
+		is_mut: is_mut,
+		Value:  value,
 	}
 }
 
