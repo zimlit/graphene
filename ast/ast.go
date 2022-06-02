@@ -109,6 +109,7 @@ type Visitor[R any] interface {
 	visitGrouping(g Grouping) R
 	visitVarDecl(v VarDecl) R
 	visitIfExpr(v IfExpr) R
+	visitAssignment(v Assignment) R
 }
 
 func (l Literal) Accept(v Visitor[any]) any {
@@ -137,25 +138,31 @@ func NewGrouping(inner Expr) Grouping {
 }
 
 type VarDecl struct {
-	Name  string
-	Kind  ValueKind
-	Value Expr
+	Name   string
+	Kind   ValueKind
+	is_mut bool
+	Value  Expr
 }
 
 func (v VarDecl) expr() {}
 func (v VarDecl) String() string {
-	return fmt.Sprintf("(let %s %s %s)", v.Name, v.Kind.String(), v.Value.String())
+	if !v.is_mut {
+		return fmt.Sprintf("(let %s %s %s)", v.Name, v.Kind.String(), v.Value.String())
+	} else {
+		return fmt.Sprintf("(let mut %s %s %s)", v.Name, v.Kind.String(), v.Value.String())
+	}
 }
 
 func (va VarDecl) Accept(v Visitor[any]) any {
 	return v.visitVarDecl(va)
 }
 
-func NewVarDecl(name string, kind ValueKind, value Expr) VarDecl {
+func NewVarDecl(name string, kind ValueKind, value Expr, is_mut bool) VarDecl {
 	return VarDecl{
-		Name:  name,
-		Kind:  kind,
-		Value: value,
+		Name:   name,
+		Kind:   kind,
+		is_mut: is_mut,
+		Value:  value,
 	}
 }
 
@@ -207,5 +214,26 @@ func NewIfExpr(condition Expr, body []Expr, else_ifs []IfExpr, el []Expr) IfExpr
 		Body:      body,
 		Else_ifs:  else_ifs,
 		Else:      el,
+	}
+}
+
+type Assignment struct {
+	name  string
+	value Expr
+}
+
+func (a Assignment) expr() {}
+func (a Assignment) String() string {
+	return fmt.Sprintf("(= %s %s)", a.name, a.value.String())
+}
+
+func (a Assignment) Accept(v Visitor[any]) any {
+	return v.visitAssignment(a)
+}
+
+func NewAssignment(name string, value Expr) Assignment {
+	return Assignment{
+		name:  name,
+		value: value,
 	}
 }

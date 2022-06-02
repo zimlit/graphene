@@ -86,6 +86,7 @@ func NewLexer(source string, fname string) Lexer {
 	l.keywords["if"] = token.IF
 	l.keywords["end"] = token.END
 	l.keywords["else"] = token.ELSE
+	l.keywords["mut"] = token.MUT
 
 	return l
 }

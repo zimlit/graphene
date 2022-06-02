@@ -340,6 +340,7 @@ func (p *Parser) ifExpr() (ast.Expr, error) {
 
 func (p *Parser) varDecl() (ast.Expr, error) {
 	if p.match(token.LET) {
+		is_mut := p.match(token.MUT)
 		c, err := p.consume(token.IDENT)
 		if !c {
 			return nil, err
@@ -361,7 +362,25 @@ func (p *Parser) varDecl() (ast.Expr, error) {
 				return nil, err
 			}
 		}
-		return ast.NewVarDecl(name.Literal, kind, value), nil
+		return ast.NewVarDecl(name.Literal, kind, value, is_mut), nil
+	}
+
+	return p.assignment()
+}
+
+func (p *Parser) assignment() (ast.Expr, error) {
+	if p.match(token.IDENT) {
+		ident := p.previous()
+		c, err := p.consume(token.EQ)
+		if !c {
+			return nil, err
+		}
+		val, err := p.expression()
+		if err != nil {
+			return nil, err
+		}
+
+		return ast.NewAssignment(ident.Literal, val), nil
 	}
 
 	return p.equality()
