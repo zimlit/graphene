@@ -179,8 +179,11 @@ func (i IfExpr) String() string {
 	var str strings.Builder
 
 	fmt.Fprintf(&str, "(if %s (", i.Condition.String())
-	for _, b := range i.Body {
+	for j, b := range i.Body {
 		fmt.Fprint(&str, b)
+		if j+1 != len(i.Body) {
+			fmt.Fprint(&str, " ")
+		}
 	}
 	if i.Else_ifs == nil {
 		fmt.Fprint(&str, ")")
@@ -219,13 +222,13 @@ func NewIfExpr(condition Expr, body []Expr, else_ifs []IfExpr, el []Expr) IfExpr
 }
 
 type Assignment struct {
-	name  string
-	value Expr
+	Name  string
+	Value Expr
 }
 
 func (a Assignment) expr() {}
 func (a Assignment) String() string {
-	return fmt.Sprintf("(= %s %s)", a.name, a.value.String())
+	return fmt.Sprintf("(= %s %s)", a.Name, a.Value.String())
 }
 
 func (a Assignment) Accept(v Visitor[any]) any {
@@ -234,22 +237,25 @@ func (a Assignment) Accept(v Visitor[any]) any {
 
 func NewAssignment(name string, value Expr) Assignment {
 	return Assignment{
-		name:  name,
-		value: value,
+		Name:  name,
+		Value: value,
 	}
 }
 
 type WhileExpr struct {
-	cond Expr
-	body []Expr
+	Cond Expr
+	Body []Expr
 }
 
 func (w WhileExpr) expr() {}
 func (w WhileExpr) String() string {
 	var str strings.Builder
-	fmt.Fprintf(&str, "(while %s (", w.cond.String())
-	for _, e := range w.body {
+	fmt.Fprintf(&str, "(while %s (", w.Cond.String())
+	for i, e := range w.Body {
 		fmt.Fprint(&str, e)
+		if i+1 != len(w.Body) {
+			fmt.Fprint(&str, " ")
+		}
 	}
 	fmt.Fprintf(&str, "))")
 
@@ -262,7 +268,7 @@ func (w WhileExpr) Accept(v Visitor[any]) any {
 
 func NewWhileExpr(cond Expr, body []Expr) WhileExpr {
 	return WhileExpr{
-		cond: cond,
-		body: body,
+		Cond: cond,
+		Body: body,
 	}
 }
