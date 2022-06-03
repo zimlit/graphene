@@ -108,8 +108,9 @@ type Visitor[R any] interface {
 	visitLiteral(l Literal) R
 	visitGrouping(g Grouping) R
 	visitVarDecl(v VarDecl) R
-	visitIfExpr(v IfExpr) R
-	visitAssignment(v Assignment) R
+	visitIfExpr(i IfExpr) R
+	visitAssignment(a Assignment) R
+	visitWhileExpr(w WhileExpr) R
 }
 
 func (l Literal) Accept(v Visitor[any]) any {
@@ -235,5 +236,33 @@ func NewAssignment(name string, value Expr) Assignment {
 	return Assignment{
 		name:  name,
 		value: value,
+	}
+}
+
+type WhileExpr struct {
+	cond Expr
+	body []Expr
+}
+
+func (w WhileExpr) expr() {}
+func (w WhileExpr) String() string {
+	var str strings.Builder
+	fmt.Fprintf(&str, "(while %s (", w.cond.String())
+	for _, e := range w.body {
+		fmt.Fprint(&str, e)
+	}
+	fmt.Fprintf(&str, "))")
+
+	return str.String()
+}
+
+func (w WhileExpr) Accept(v Visitor[any]) any {
+	return v.visitWhileExpr(w)
+}
+
+func NewWhileExpr(cond Expr, body []Expr) WhileExpr {
+	return WhileExpr{
+		cond: cond,
+		body: body,
 	}
 }
