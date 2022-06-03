@@ -47,11 +47,14 @@ func (r *ReplCmd) Run(xtx *Context) error {
 		} else {
 			fmt.Println(toks)
 			p := parser.NewParser(toks, lines, "stdin")
-			tree, errs := p.Parse()
-			if errs != nil {
-				fmt.Println(errs)
-			} else {
-				fmt.Println(tree)
+			c, len := p.Parse()
+			for i := 0; i < len; i++ {
+				res := <-c
+				if res.Err != nil {
+					fmt.Print(res.Err.Error())
+				} else {
+					fmt.Println(res.Exprs)
+				}
 			}
 		}
 	}

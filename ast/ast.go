@@ -8,6 +8,8 @@ import (
 
 type ValueKind uint8
 
+type Exprs []Expr
+
 const (
 	INT   = iota
 	FLOAT = iota
