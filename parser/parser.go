@@ -9,6 +9,11 @@ import (
 	"github.com/fatih/color"
 )
 
+type ParseResult struct {
+	Exprs ast.Exprs
+	Err   ParseError
+}
+
 type ParseError []error
 
 func (p ParseError) Error() string {
@@ -237,24 +242,30 @@ func (p *Parser) synchronize() {
 	}
 }
 
-func (p *Parser) Parse() ([]ast.Expr, error) {
+func (p *Parser) Parse() (<-chan ParseResult, int) {
 	exprs := []ast.Expr{}
 	var errs ParseError = nil
+	c := make(chan ParseResult)
+	imps := 1
 
-	for p.pos < len(p.tokens) {
-		expr, err := p.expression()
-		if err != nil {
-			errs = append(errs, err)
-			p.synchronize()
+	go func() {
+		for p.pos < len(p.tokens) {
+			expr, err := p.expression()
+			if err != nil {
+				errs = append(errs, err)
+				p.synchronize()
+			}
+			exprs = append(exprs, expr)
 		}
-		exprs = append(exprs, expr)
-	}
 
-	if errs != nil {
-		return nil, errs
-	}
+		if errs != nil {
+			c <- ParseResult{nil, errs}
+		}
 
-	return exprs, nil
+		c <- ParseResult{exprs, nil}
+	}()
+
+	return c, imps
 }
 
 func (p *Parser) expression() (ast.Expr, error) {
