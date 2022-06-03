@@ -1,6 +1,9 @@
 program    = expression* ;
 
-expression = if ;
+expression = while ;
+
+while      = "while" expression expression* "end"
+           | if ;
 
 if         = "if" expression expression* (("else if" expression expression*)*? "else" expression*)? "end"
            | varDecl ;

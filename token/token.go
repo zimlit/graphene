@@ -35,6 +35,7 @@ const (
 	ELSEIF
 	END
 	MUT
+	WHILE
 )
 
 func (t TokenKind) String() string {

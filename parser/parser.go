@@ -258,6 +258,40 @@ func (p *Parser) Parse() ([]ast.Expr, error) {
 }
 
 func (p *Parser) expression() (ast.Expr, error) {
+	return p.whileExpr()
+}
+
+func (p *Parser) whileExpr() (ast.Expr, error) {
+	if p.match(token.WHILE) {
+		cond, err := p.expression()
+		if err != nil {
+			return nil, err
+		}
+
+		var body []ast.Expr
+		for {
+			b, err := p.expression()
+			if p.peek() == nil {
+				return nil, newUnexpectedTokenErr(nil, []token.TokenKind{token.END}, p.lines[p.previous().Line-1], p.previous().Line, p.previous().Col, p.fname)
+			}
+			if err != nil {
+				if p.peek().Kind == token.END {
+					break
+				}
+
+				return nil, err
+			}
+			body = append(body, b)
+		}
+
+		c, err := p.consume(token.END)
+		if !c {
+			return nil, err
+		}
+
+		return ast.NewWhileExpr(cond, body), nil
+	}
+
 	return p.ifExpr()
 }
 
@@ -371,9 +405,10 @@ func (p *Parser) varDecl() (ast.Expr, error) {
 func (p *Parser) assignment() (ast.Expr, error) {
 	if p.match(token.IDENT) {
 		ident := p.previous()
-		c, err := p.consume(token.EQ)
+		c, _ := p.consume(token.EQ)
 		if !c {
-			return nil, err
+			p.pos--
+			return p.equality()
 		}
 		val, err := p.expression()
 		if err != nil {
