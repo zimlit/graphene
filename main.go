@@ -20,6 +20,40 @@ type BuildCmd struct {
 }
 
 func (b *BuildCmd) Run(ctx *Context) error {
+	dat, err := os.ReadFile(b.Path)
+	if err != nil {
+		return err
+	}
+
+	var out *os.File = os.Stdin
+	if b.Output != "" {
+		f, err := os.Create(b.Output)
+		if err != nil {
+			return err
+		}
+		out = f
+	}
+
+	l := lexer.NewLexer(string(dat), b.Path)
+	toks, lines, errs := l.Lex()
+	if errs != nil {
+		fmt.Println(errs.Error())
+		return nil
+	}
+	p := parser.NewParser(toks, lines, b.Path)
+	c, len := p.Parse()
+
+	for i := 0; i < len; i++ {
+		res := <-c
+		if res.Err != nil {
+			fmt.Print(res.Err.Error())
+		} else {
+			for _, expr := range res.Exprs {
+				out.WriteString(fmt.Sprintln(expr))
+			}
+		}
+	}
+
 	return nil
 }
 

@@ -143,7 +143,10 @@ func (l *Lexer) peek() rune {
 }
 
 func (l *Lexer) peekNext() rune {
-	return l.source[l.pos+1]
+	if l.pos < len(l.source)-1 {
+		return l.source[l.pos+1]
+	}
+	return '\000'
 }
 
 func (l *Lexer) advance() {
@@ -272,6 +275,7 @@ func (l *Lexer) Lex() ([]token.Token, []string, LexErrs) {
 			lines = append(lines, l.lineStr)
 			l.line++
 			l.lineStr = ""
+			tmps = []tmpLexErr{}
 		default:
 			if unicode.IsDigit(l.peek()) {
 				t, err := l.num()
@@ -286,11 +290,15 @@ func (l *Lexer) Lex() ([]token.Token, []string, LexErrs) {
 				t := l.ident()
 				toks = append(toks, t)
 			} else {
+				fmt.Println("err")
 				tmps = append(tmps, l.newTmpErr(fmt.Sprintf("Unexpected character '%s'", string(l.peek()))))
 
 			}
 
 		}
+	}
+	for _, err := range tmps {
+		errs = append(errs, l.newLexErr(err))
 	}
 
 	if errs != nil {
