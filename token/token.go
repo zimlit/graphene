@@ -36,6 +36,8 @@ const (
 	END
 	MUT
 	WHILE
+	STRING
+	STRINGK
 )
 
 func (t TokenKind) String() string {
@@ -92,6 +94,10 @@ func (t TokenKind) String() string {
 		return "end"
 	case MUT:
 		return "mut"
+	case STRING:
+		return "string literal"
+	case STRINGK:
+		return "string"
 	default:
 		return "INVALID"
 	}
@@ -108,9 +114,9 @@ func (t Token) String() string {
 	var str strings.Builder
 
 	fmt.Fprintln(&str, "Token {")
-	fmt.Fprint(&str, "   ", "kind:", t.Kind)
+	fmt.Fprint(&str, "    kind:", t.Kind)
 	fmt.Fprintln(&str, ",")
-	fmt.Fprint(&str, "   ", "literal:", t.Literal)
+	fmt.Fprintf(&str, "    literal: \"%s\"", t.Literal)
 	fmt.Fprintln(&str, ",")
 	fmt.Fprint(&str, "   ", "line:", t.Line)
 	fmt.Fprintln(&str, ",")

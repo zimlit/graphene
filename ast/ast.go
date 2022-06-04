@@ -11,8 +11,9 @@ type ValueKind uint8
 type Exprs []Expr
 
 const (
-	INT   = iota
-	FLOAT = iota
+	INT = iota
+	FLOAT
+	STRING
 )
 
 func NewKind(t token.TokenKind) ValueKind {
@@ -21,6 +22,8 @@ func NewKind(t token.TokenKind) ValueKind {
 		return INT
 	case token.FLOATK:
 		return FLOAT
+	case token.STRINGK:
+		return STRING
 	}
 	panic("unreachable")
 }
