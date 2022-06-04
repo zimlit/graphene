@@ -40,6 +40,7 @@ func (b *BuildCmd) Run(ctx *Context) error {
 		fmt.Println(errs.Error())
 		return nil
 	}
+	fmt.Println(toks)
 	p := parser.NewParser(toks, lines, b.Path)
 	c, len := p.Parse()
 

@@ -356,6 +356,9 @@ func (l *Lexer) Lex() ([]token.Token, []string, LexErrs) {
 	for _, err := range tmps {
 		errs = append(errs, l.newLexErr(err))
 	}
+	if l.lineStr != "" {
+		lines = append(lines, l.lineStr)
+	}
 
 	if errs != nil {
 		return nil, nil, errs
