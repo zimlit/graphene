@@ -34,6 +34,8 @@ func (k ValueKind) String() string {
 		return "INT"
 	case FLOAT:
 		return "FLOAT"
+	case STRING:
+		return "STRING"
 	default:
 		return "INVALID"
 	}
