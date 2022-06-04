@@ -47,7 +47,7 @@ func (m MsgErr) Error() string {
 	fmt.Fprintf(&str, "%s:%d:%d\n", m.fname, m.line, m.col)
 	b(&str, "  |\n")
 	b(&str, "%d | ", m.line)
-	fmt.Fprintln(&str, m.lineStr)
+	fmt.Fprint(&str, m.lineStr)
 	b(&str, "  |")
 	for i := 0; i < m.col; i++ {
 		fmt.Fprint(&str, " ")
@@ -123,7 +123,7 @@ func (u UnexpectedTokenErr) Error() string {
 	fmt.Fprintf(&str, "%s:%d:%d\n", u.fname, u.line, u.col)
 	b(&str, "  |\n")
 	b(&str, "%d | ", u.line)
-	fmt.Fprintln(&str, u.lineStr)
+	fmt.Fprint(&str, u.lineStr)
 	b(&str, "  |")
 	if u.got == nil {
 		for i := -1; i < u.col; i++ {
@@ -395,7 +395,7 @@ func (p *Parser) varDecl() (ast.Expr, error) {
 		if !c {
 			return nil, err
 		}
-		c, err = p.consume(token.INTK, token.FLOATK)
+		c, err = p.consume(token.INTK, token.FLOATK, token.STRINGK)
 		if !c {
 			return nil, err
 		}
@@ -519,7 +519,9 @@ func (p *Parser) unary() (ast.Expr, error) {
 func (p *Parser) primary() (ast.Expr, error) {
 	if p.match(token.INT, token.FLOAT, token.NIL, token.IDENT) {
 		return ast.NewLiteral(p.previous().Literal, p.previous().Kind), nil
-
+	}
+	if p.match(token.STRING) {
+		return ast.NewLiteral(fmt.Sprintf("\"%s\"", p.previous().Literal), p.previous().Kind), nil
 	}
 
 	if p.match(token.LPAREN) {

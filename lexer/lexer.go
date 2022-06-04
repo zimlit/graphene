@@ -38,7 +38,7 @@ func (l *LexErr) Error() string {
 	fmt.Fprintf(&str, "%s:%d:%d\n", l.fname, l.line, l.col)
 	b(&str, "  |\n")
 	b(&str, "%d | ", l.line)
-	fmt.Fprintln(&str, l.lineStr)
+	fmt.Fprint(&str, l.lineStr)
 	b(&str, "  |")
 	for i := 0; i < l.col; i++ {
 		fmt.Fprint(&str, " ")
@@ -88,6 +88,7 @@ func NewLexer(source string, fname string) Lexer {
 	l.keywords["else"] = token.ELSE
 	l.keywords["mut"] = token.MUT
 	l.keywords["while"] = token.WHILE
+	l.keywords["string"] = token.STRINGK
 
 	return l
 }
@@ -139,7 +140,10 @@ func (l *Lexer) newTokenAt(literal string, kind token.TokenKind, col int) token.
 }
 
 func (l *Lexer) peek() rune {
-	return l.source[l.pos]
+	if l.pos < len(l.source) {
+		return l.source[l.pos]
+	}
+	return '\000'
 }
 
 func (l *Lexer) peekNext() rune {
@@ -150,7 +154,10 @@ func (l *Lexer) peekNext() rune {
 }
 
 func (l *Lexer) advance() {
-	l.lineStr += string(l.source[l.pos])
+	if l.pos < len(l.source) {
+		l.lineStr += string(l.source[l.pos])
+
+	}
 	l.pos++
 	l.col++
 }
@@ -162,6 +169,48 @@ func (l *Lexer) match(c rune) bool {
 	}
 
 	return false
+}
+
+func (l *Lexer) string() (*token.Token, *tmpLexErr) {
+	val := ""
+	col := l.col
+	l.advance()
+
+Exit:
+	for ; l.pos < len(l.source); l.advance() {
+		switch l.peek() {
+		case '"':
+			break Exit
+		case '\000':
+			fallthrough
+		case '\n':
+			err := l.newTmpErr("Unclosed string")
+			return nil, &err
+		case '\\':
+			l.advance()
+			switch l.peek() {
+			case 't':
+				val += "\t"
+			case 'n':
+				val += "\n"
+			case '"':
+				val += "\""
+			case '\\':
+				val += "\\"
+			case 'r':
+				val += "\r"
+			case 'v':
+				val += "\v"
+			default:
+				err := l.newTmpErr("Invalid escape character")
+				return nil, &err
+			}
+		default:
+			val += string(l.peek())
+		}
+	}
+	tok := l.newTokenAt(val, token.STRING, col)
+	return &tok, nil
 }
 
 func (l *Lexer) num() (*token.Token, *tmpLexErr) {
@@ -266,9 +315,17 @@ func (l *Lexer) Lex() ([]token.Token, []string, LexErrs) {
 			}
 		case ':':
 			toks = append(toks, l.newToken(":", token.COLON))
+		case '"':
+			t, err := l.string()
+			if err != nil {
+				tmps = append(tmps, *err)
+			} else {
+				toks = append(toks, *t)
+			}
 		case ' ':
 		case '\t':
 		case '\n':
+			l.lineStr += "\n"
 			for _, err := range tmps {
 				errs = append(errs, l.newLexErr(err))
 			}
@@ -290,7 +347,6 @@ func (l *Lexer) Lex() ([]token.Token, []string, LexErrs) {
 				t := l.ident()
 				toks = append(toks, t)
 			} else {
-				fmt.Println("err")
 				tmps = append(tmps, l.newTmpErr(fmt.Sprintf("Unexpected character '%s'", string(l.peek()))))
 
 			}
@@ -299,6 +355,9 @@ func (l *Lexer) Lex() ([]token.Token, []string, LexErrs) {
 	}
 	for _, err := range tmps {
 		errs = append(errs, l.newLexErr(err))
+	}
+	if l.lineStr != "" {
+		lines = append(lines, l.lineStr)
 	}
 
 	if errs != nil {
