@@ -38,6 +38,7 @@ const (
 	WHILE
 	STRING
 	STRINGK
+	FN
 )
 
 func (t TokenKind) String() string {
@@ -98,6 +99,8 @@ func (t TokenKind) String() string {
 		return "string literal"
 	case STRINGK:
 		return "string"
+	case FN:
+		return "fn"
 	default:
 		return "INVALID"
 	}

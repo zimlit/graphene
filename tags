@@ -1,0 +1,230 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_OUTPUT_EXCMD	mixed	/number, pattern, mixed, or combineV2/
+!_TAG_OUTPUT_FILESEP	slash	/slash or backslash/
+!_TAG_OUTPUT_MODE	u-ctags	/u-ctags or e-ctags/
+!_TAG_PATTERN_LENGTH_LIMIT	96	/0 for no limit/
+!_TAG_PROC_CWD	/home/devinr/projects/graphene/	//
+!_TAG_PROGRAM_AUTHOR	Universal Ctags Team	//
+!_TAG_PROGRAM_NAME	Universal Ctags	/Derived from Exuberant Ctags/
+!_TAG_PROGRAM_URL	https://ctags.io/	/official site/
+!_TAG_PROGRAM_VERSION	5.9.0	/p5.9.20210905.0/
+About The Project	README.md	/^## About The Project$/;"	s
+Accept	ast/ast.go	/^	Accept(v Visitor[any]) any$/;"	n	interface:ast.Expr	typeref:typename:any
+Accept	ast/ast.go	/^func (a Assignment) Accept(v Visitor[any]) any {$/;"	f	struct:ast.Assignment	typeref:typename:any
+Accept	ast/ast.go	/^func (b Binary) Accept(v Visitor[any]) any {$/;"	f	struct:ast.Binary	typeref:typename:any
+Accept	ast/ast.go	/^func (g Grouping) Accept(v Visitor[any]) any {$/;"	f	struct:ast.Grouping	typeref:typename:any
+Accept	ast/ast.go	/^func (i IfExpr) Accept(v Visitor[any]) any {$/;"	f	struct:ast.IfExpr	typeref:typename:any
+Accept	ast/ast.go	/^func (l Literal) Accept(v Visitor[any]) any {$/;"	f	struct:ast.Literal	typeref:typename:any
+Accept	ast/ast.go	/^func (u Unary) Accept(v Visitor[any]) any {$/;"	f	struct:ast.Unary	typeref:typename:any
+Accept	ast/ast.go	/^func (va VarDecl) Accept(v Visitor[any]) any {$/;"	f	struct:ast.VarDecl	typeref:typename:any
+Accept	ast/ast.go	/^func (w WhileExpr) Accept(v Visitor[any]) any {$/;"	f	struct:ast.WhileExpr	typeref:typename:any
+Acknowledgments	README.md	/^## Acknowledgments$/;"	s
+Assignment	ast/ast.go	/^type Assignment struct {$/;"	s	package:ast
+BANG	token/token.go	/^	BANG$/;"	c	package:token
+Binary	ast/ast.go	/^type Binary struct {$/;"	s	package:ast
+Body	ast/ast.go	/^	Body      []Expr$/;"	m	struct:ast.IfExpr	typeref:typename:[]Expr
+Body	ast/ast.go	/^	Body []Expr$/;"	m	struct:ast.WhileExpr	typeref:typename:[]Expr
+COLON	token/token.go	/^	COLON$/;"	c	package:token
+Col	token/token.go	/^	Col     int$/;"	m	struct:token.Token	typeref:typename:int
+Cond	ast/ast.go	/^	Cond Expr$/;"	m	struct:ast.WhileExpr	typeref:typename:Expr
+Condition	ast/ast.go	/^	Condition Expr$/;"	m	struct:ast.IfExpr	typeref:typename:Expr
+Contact	README.md	/^## Contact$/;"	s
+Contributing	README.md	/^## Contributing$/;"	s
+ELSE	token/token.go	/^	ELSE$/;"	c	package:token
+ELSEIF	token/token.go	/^	ELSEIF$/;"	c	package:token
+END	token/token.go	/^	END$/;"	c	package:token
+EQ	token/token.go	/^	EQ$/;"	c	package:token
+EQEQ	token/token.go	/^	EQEQ$/;"	c	package:token
+Else	ast/ast.go	/^	Else      []Expr$/;"	m	struct:ast.IfExpr	typeref:typename:[]Expr
+Else_ifs	ast/ast.go	/^	Else_ifs  []IfExpr$/;"	m	struct:ast.IfExpr	typeref:typename:[]IfExpr
+Err	parser/parser.go	/^	Err   ParseError$/;"	m	struct:parser.ParseResult	typeref:typename:ParseError
+Error	lexer/lexer.go	/^func (l *LexErr) Error() string {$/;"	f	struct:lexer.LexErr	typeref:typename:string
+Error	lexer/lexer.go	/^func (l *LexErrs) Error() string {$/;"	f	type:lexer.LexErrs	typeref:typename:string
+Error	lexer/lexer.go	/^func (l *tmpLexErr) Error() string { return "" }$/;"	f	struct:lexer.tmpLexErr	typeref:typename:string
+Error	parser/parser.go	/^func (m MsgErr) Error() string {$/;"	f	struct:parser.MsgErr	typeref:typename:string
+Error	parser/parser.go	/^func (p ParseError) Error() string {$/;"	f	type:parser.ParseError	typeref:typename:string
+Error	parser/parser.go	/^func (u UnexpectedTokenErr) Error() string {$/;"	f	struct:parser.UnexpectedTokenErr	typeref:typename:string
+Execute	cmd/root.go	/^func Execute() {$/;"	f	package:cmd
+Expr	ast/ast.go	/^type Expr interface {$/;"	i	package:ast
+Exprs	ast/ast.go	/^type Exprs []Expr$/;"	t	package:ast	typeref:typename:[]Expr
+Exprs	parser/parser.go	/^	Exprs ast.Exprs$/;"	m	struct:parser.ParseResult	typeref:typename:ast.Exprs
+FLOAT	ast/ast.go	/^	FLOAT$/;"	c	package:ast
+FLOAT	token/token.go	/^	FLOAT$/;"	c	package:token
+FLOATK	token/token.go	/^	FLOATK$/;"	c	package:token
+FN	ast/ast.go	/^	FN$/;"	c	package:ast
+FN	token/token.go	/^	FN$/;"	c	package:token
+GREATER	token/token.go	/^	GREATER$/;"	c	package:token
+GREATEREQ	token/token.go	/^	GREATEREQ$/;"	c	package:token
+Getting Started	README.md	/^## Getting Started$/;"	s
+Grouping	ast/ast.go	/^type Grouping struct {$/;"	s	package:ast
+IDENT	token/token.go	/^	IDENT$/;"	c	package:token
+IF	token/token.go	/^	IF$/;"	c	package:token
+INT	ast/ast.go	/^	INT = iota$/;"	c	package:ast
+INT	token/token.go	/^	INT = iota$/;"	c	package:token
+INTK	token/token.go	/^	INTK$/;"	c	package:token
+IfExpr	ast/ast.go	/^type IfExpr struct {$/;"	s	package:ast
+Inner	ast/ast.go	/^	Inner Expr$/;"	m	struct:ast.Grouping	typeref:typename:Expr
+Installation	README.md	/^### Installation$/;"	S	section:Getting Started
+Kind	ast/ast.go	/^	Kind   ValueKind$/;"	m	struct:ast.VarDecl	typeref:typename:ValueKind
+Kind	ast/ast.go	/^	Kind  token.TokenKind$/;"	m	struct:ast.Literal	typeref:typename:token.TokenKind
+Kind	token/token.go	/^	Kind    TokenKind$/;"	m	struct:token.Token	typeref:typename:TokenKind
+LESS	token/token.go	/^	LESS$/;"	c	package:token
+LESSEQ	token/token.go	/^	LESSEQ$/;"	c	package:token
+LET	token/token.go	/^	LET$/;"	c	package:token
+LPAREN	token/token.go	/^	LPAREN$/;"	c	package:token
+Left	ast/ast.go	/^	Left     Expr$/;"	m	struct:ast.Binary	typeref:typename:Expr
+Lex	lexer/lexer.go	/^func (l *Lexer) Lex() ([]token.Token, []string, LexErrs) {$/;"	f	struct:lexer.Lexer	typeref:typename:([]token.Token, []string, LexErrs)
+LexErr	lexer/lexer.go	/^type LexErr struct {$/;"	s	package:lexer
+LexErrs	lexer/lexer.go	/^type LexErrs []LexErr$/;"	t	package:lexer	typeref:typename:[]LexErr
+Lexer	lexer/lexer.go	/^type Lexer struct {$/;"	s	package:lexer
+License	README.md	/^## License$/;"	s
+Line	token/token.go	/^	Line    int$/;"	m	struct:token.Token	typeref:typename:int
+Literal	ast/ast.go	/^type Literal struct {$/;"	s	package:ast
+Literal	token/token.go	/^	Literal string$/;"	m	struct:token.Token	typeref:typename:string
+MINUS	token/token.go	/^	MINUS$/;"	c	package:token
+MUT	token/token.go	/^	MUT$/;"	c	package:token
+MsgErr	parser/parser.go	/^type MsgErr struct {$/;"	s	package:parser
+NEQ	token/token.go	/^	NEQ$/;"	c	package:token
+NIL	token/token.go	/^	NIL$/;"	c	package:token
+Name	ast/ast.go	/^	Name   string$/;"	m	struct:ast.VarDecl	typeref:typename:string
+Name	ast/ast.go	/^	Name  string$/;"	m	struct:ast.Assignment	typeref:typename:string
+NewAssignment	ast/ast.go	/^func NewAssignment(name string, value Expr) Assignment {$/;"	f	package:ast	typeref:typename:Assignment
+NewBinary	ast/ast.go	/^func NewBinary(left Expr, operator token.Token, right Expr) Binary {$/;"	f	package:ast	typeref:typename:Binary
+NewGrouping	ast/ast.go	/^func NewGrouping(inner Expr) Grouping {$/;"	f	package:ast	typeref:typename:Grouping
+NewIfExpr	ast/ast.go	/^func NewIfExpr(condition Expr, body []Expr, else_ifs []IfExpr, el []Expr) IfExpr {$/;"	f	package:ast	typeref:typename:IfExpr
+NewKind	ast/ast.go	/^func NewKind(t token.TokenKind) ValueKind {$/;"	f	package:ast	typeref:typename:ValueKind
+NewLexer	lexer/lexer.go	/^func NewLexer(source string, fname string) Lexer {$/;"	f	package:lexer	typeref:typename:Lexer
+NewLiteral	ast/ast.go	/^func NewLiteral(value string, kind token.TokenKind) Literal {$/;"	f	package:ast	typeref:typename:Literal
+NewParser	parser/parser.go	/^func NewParser(tokens []token.Token, lines []string, fname string) Parser {$/;"	f	package:parser	typeref:typename:Parser
+NewUnary	ast/ast.go	/^func NewUnary(operator token.Token, right Expr) Unary {$/;"	f	package:ast	typeref:typename:Unary
+NewVarDecl	ast/ast.go	/^func NewVarDecl(name string, kind ValueKind, value Expr, is_mut bool) VarDecl {$/;"	f	package:ast	typeref:typename:VarDecl
+NewWhileExpr	ast/ast.go	/^func NewWhileExpr(cond Expr, body []Expr) WhileExpr {$/;"	f	package:ast	typeref:typename:WhileExpr
+Operator	ast/ast.go	/^	Operator token.Token$/;"	m	struct:ast.Binary	typeref:typename:token.Token
+Operator	ast/ast.go	/^	Operator token.Token$/;"	m	struct:ast.Unary	typeref:typename:token.Token
+PLUS	token/token.go	/^	PLUS$/;"	c	package:token
+Parse	parser/parser.go	/^func (p *Parser) Parse(c chan ParseResult) {$/;"	f	struct:parser.Parser
+ParseError	parser/parser.go	/^type ParseError []error$/;"	t	package:parser	typeref:typename:[]error
+ParseResult	parser/parser.go	/^type ParseResult struct {$/;"	s	package:parser
+Parser	parser/parser.go	/^type Parser struct {$/;"	s	package:parser
+Prerequisites	README.md	/^### Prerequisites$/;"	S	section:Getting Started
+RPAREN	token/token.go	/^	RPAREN$/;"	c	package:token
+Right	ast/ast.go	/^	Right    Expr$/;"	m	struct:ast.Binary	typeref:typename:Expr
+Right	ast/ast.go	/^	Right    Expr$/;"	m	struct:ast.Unary	typeref:typename:Expr
+SLASH	token/token.go	/^	SLASH$/;"	c	package:token
+STAR	token/token.go	/^	STAR$/;"	c	package:token
+STRING	ast/ast.go	/^	STRING$/;"	c	package:ast
+STRING	token/token.go	/^	STRING$/;"	c	package:token
+STRINGK	token/token.go	/^	STRINGK$/;"	c	package:token
+String	ast/ast.go	/^	String() string$/;"	n	interface:ast.Expr	typeref:typename:string
+String	ast/ast.go	/^func (a Assignment) String() string {$/;"	f	struct:ast.Assignment	typeref:typename:string
+String	ast/ast.go	/^func (b Binary) String() string {$/;"	f	struct:ast.Binary	typeref:typename:string
+String	ast/ast.go	/^func (g Grouping) String() string {$/;"	f	struct:ast.Grouping	typeref:typename:string
+String	ast/ast.go	/^func (i IfExpr) String() string {$/;"	f	struct:ast.IfExpr	typeref:typename:string
+String	ast/ast.go	/^func (k ValueKind) String() string {$/;"	f	type:ast.ValueKind	typeref:typename:string
+String	ast/ast.go	/^func (l Literal) String() string {$/;"	f	struct:ast.Literal	typeref:typename:string
+String	ast/ast.go	/^func (u Unary) String() string {$/;"	f	struct:ast.Unary	typeref:typename:string
+String	ast/ast.go	/^func (v VarDecl) String() string {$/;"	f	struct:ast.VarDecl	typeref:typename:string
+String	ast/ast.go	/^func (w WhileExpr) String() string {$/;"	f	struct:ast.WhileExpr	typeref:typename:string
+String	token/token.go	/^func (t Token) String() string {$/;"	f	struct:token.Token	typeref:typename:string
+String	token/token.go	/^func (t TokenKind) String() string {$/;"	f	type:token.TokenKind	typeref:typename:string
+Token	token/token.go	/^type Token struct {$/;"	s	package:token
+TokenKind	token/token.go	/^type TokenKind uint8$/;"	t	package:token	typeref:typename:uint8
+Unary	ast/ast.go	/^type Unary struct {$/;"	s	package:ast
+UnexpectedTokenErr	parser/parser.go	/^type UnexpectedTokenErr struct {$/;"	s	package:parser
+Usage	README.md	/^## Usage$/;"	s
+Value	ast/ast.go	/^	Value  Expr$/;"	m	struct:ast.VarDecl	typeref:typename:Expr
+Value	ast/ast.go	/^	Value Expr$/;"	m	struct:ast.Assignment	typeref:typename:Expr
+Value	ast/ast.go	/^	Value string$/;"	m	struct:ast.Literal	typeref:typename:string
+ValueKind	ast/ast.go	/^type ValueKind uint8$/;"	t	package:ast	typeref:typename:uint8
+VarDecl	ast/ast.go	/^type VarDecl struct {$/;"	s	package:ast
+Visitor	ast/ast.go	/^type Visitor[R any] interface {$/;"	t	package:ast	typeref:typename:[R any] interface { visitBinary(b Binary) R; visitUnary(u Unary) R; visitLiteral(l Literal) R; visitGrouping(g Grouping) R; visitVarDecl(v VarDecl) R; visitIfExpr(i IfExpr) R; visitAssignment(a Assignment) R; visitWhileExpr(w WhileExpr) R;}
+WHILE	token/token.go	/^	WHILE$/;"	c	package:token
+WhileExpr	ast/ast.go	/^type WhileExpr struct {$/;"	s	package:ast
+advance	lexer/lexer.go	/^func (l *Lexer) advance() {$/;"	f	struct:lexer.Lexer
+advance	parser/parser.go	/^func (p *Parser) advance() {$/;"	f	struct:parser.Parser
+assignment	parser/parser.go	/^func (p *Parser) assignment() (ast.Expr, error) {$/;"	f	struct:parser.Parser	typeref:typename:(ast.Expr, error)
+ast	ast/ast.go	/^package ast$/;"	p
+buildCmd	cmd/build.go	/^var buildCmd = &cobra.Command{$/;"	v	package:cmd
+check	parser/parser.go	/^func (p *Parser) check(t token.TokenKind) bool {$/;"	f	struct:parser.Parser	typeref:typename:bool
+cmd	cmd/build.go	/^package cmd$/;"	p
+cmd	cmd/root.go	/^package cmd$/;"	p
+col	lexer/lexer.go	/^	col      int$/;"	m	struct:lexer.Lexer	typeref:typename:int
+col	lexer/lexer.go	/^	col     int$/;"	m	struct:lexer.LexErr	typeref:typename:int
+col	lexer/lexer.go	/^	col   int$/;"	m	struct:lexer.tmpLexErr	typeref:typename:int
+col	parser/parser.go	/^	col      int$/;"	m	struct:parser.UnexpectedTokenErr	typeref:typename:int
+col	parser/parser.go	/^	col     int$/;"	m	struct:parser.MsgErr	typeref:typename:int
+comparison	parser/parser.go	/^func (p *Parser) comparison() (ast.Expr, error) {$/;"	f	struct:parser.Parser	typeref:typename:(ast.Expr, error)
+consume	parser/parser.go	/^func (p *Parser) consume(types ...token.TokenKind) (bool, error) {$/;"	f	struct:parser.Parser	typeref:typename:(bool, error)
+equality	parser/parser.go	/^func (p *Parser) equality() (ast.Expr, error) {$/;"	f	struct:parser.Parser	typeref:typename:(ast.Expr, error)
+expected	parser/parser.go	/^	expected []token.TokenKind$/;"	m	struct:parser.UnexpectedTokenErr	typeref:typename:[]token.TokenKind
+expr	ast/ast.go	/^	expr()$/;"	n	interface:ast.Expr
+expr	ast/ast.go	/^func (a Assignment) expr() {}$/;"	f	struct:ast.Assignment
+expr	ast/ast.go	/^func (b Binary) expr() {}$/;"	f	struct:ast.Binary
+expr	ast/ast.go	/^func (g Grouping) expr() {}$/;"	f	struct:ast.Grouping
+expr	ast/ast.go	/^func (i IfExpr) expr() {}$/;"	f	struct:ast.IfExpr
+expr	ast/ast.go	/^func (l Literal) expr() {}$/;"	f	struct:ast.Literal
+expr	ast/ast.go	/^func (u Unary) expr() {}$/;"	f	struct:ast.Unary
+expr	ast/ast.go	/^func (v VarDecl) expr() {}$/;"	f	struct:ast.VarDecl
+expr	ast/ast.go	/^func (w WhileExpr) expr() {}$/;"	f	struct:ast.WhileExpr
+expression	parser/parser.go	/^func (p *Parser) expression() (ast.Expr, error) {$/;"	f	struct:parser.Parser	typeref:typename:(ast.Expr, error)
+factor	parser/parser.go	/^func (p *Parser) factor() (ast.Expr, error) {$/;"	f	struct:parser.Parser	typeref:typename:(ast.Expr, error)
+fname	lexer/lexer.go	/^	fname    string$/;"	m	struct:lexer.Lexer	typeref:typename:string
+fname	lexer/lexer.go	/^	fname   string$/;"	m	struct:lexer.LexErr	typeref:typename:string
+fname	lexer/lexer.go	/^	fname string$/;"	m	struct:lexer.tmpLexErr	typeref:typename:string
+fname	parser/parser.go	/^	fname    string$/;"	m	struct:parser.UnexpectedTokenErr	typeref:typename:string
+fname	parser/parser.go	/^	fname   string$/;"	m	struct:parser.MsgErr	typeref:typename:string
+fname	parser/parser.go	/^	fname  string$/;"	m	struct:parser.Parser	typeref:typename:string
+got	parser/parser.go	/^	got      *token.Token$/;"	m	struct:parser.UnexpectedTokenErr	typeref:typename:*token.Token
+ident	lexer/lexer.go	/^func (l *Lexer) ident() token.Token {$/;"	f	struct:lexer.Lexer	typeref:typename:token.Token
+ifExpr	parser/parser.go	/^func (p *Parser) ifExpr() (ast.Expr, error) {$/;"	f	struct:parser.Parser	typeref:typename:(ast.Expr, error)
+init	cmd/build.go	/^func init() {$/;"	f	package:cmd
+init	cmd/root.go	/^func init() {$/;"	f	package:cmd
+is_mut	ast/ast.go	/^	is_mut bool$/;"	m	struct:ast.VarDecl	typeref:typename:bool
+keywords	lexer/lexer.go	/^	keywords map[string]token.TokenKind$/;"	m	struct:lexer.Lexer	typeref:typename:map[string]token.TokenKind
+lexer	lexer/lexer.go	/^package lexer$/;"	p
+line	lexer/lexer.go	/^	line     int$/;"	m	struct:lexer.Lexer	typeref:typename:int
+line	lexer/lexer.go	/^	line    int$/;"	m	struct:lexer.LexErr	typeref:typename:int
+line	lexer/lexer.go	/^	line  int$/;"	m	struct:lexer.tmpLexErr	typeref:typename:int
+line	parser/parser.go	/^	line     int$/;"	m	struct:parser.UnexpectedTokenErr	typeref:typename:int
+line	parser/parser.go	/^	line    int$/;"	m	struct:parser.MsgErr	typeref:typename:int
+lineStr	lexer/lexer.go	/^	lineStr  string$/;"	m	struct:lexer.Lexer	typeref:typename:string
+lineStr	lexer/lexer.go	/^	lineStr string$/;"	m	struct:lexer.LexErr	typeref:typename:string
+lineStr	parser/parser.go	/^	lineStr  string$/;"	m	struct:parser.UnexpectedTokenErr	typeref:typename:string
+lineStr	parser/parser.go	/^	lineStr string$/;"	m	struct:parser.MsgErr	typeref:typename:string
+lines	parser/parser.go	/^	lines  []string$/;"	m	struct:parser.Parser	typeref:typename:[]string
+main	main.go	/^func main() {$/;"	f	package:main
+main	main.go	/^package main$/;"	p
+match	lexer/lexer.go	/^func (l *Lexer) match(c rune) bool {$/;"	f	struct:lexer.Lexer	typeref:typename:bool
+match	parser/parser.go	/^func (p *Parser) match(types ...token.TokenKind) bool {$/;"	f	struct:parser.Parser	typeref:typename:bool
+msg	lexer/lexer.go	/^	msg     string$/;"	m	struct:lexer.LexErr	typeref:typename:string
+msg	lexer/lexer.go	/^	msg   string$/;"	m	struct:lexer.tmpLexErr	typeref:typename:string
+msg	parser/parser.go	/^	msg     string$/;"	m	struct:parser.MsgErr	typeref:typename:string
+newLexErr	lexer/lexer.go	/^func (l *Lexer) newLexErr(tmp tmpLexErr) LexErr {$/;"	f	struct:lexer.Lexer	typeref:typename:LexErr
+newMsgErr	parser/parser.go	/^func newMsgErr(msg string, line int, col int, lineStr string, fname string) MsgErr {$/;"	f	package:parser	typeref:typename:MsgErr
+newTmpErr	lexer/lexer.go	/^func (l *Lexer) newTmpErr(msg string) tmpLexErr {$/;"	f	struct:lexer.Lexer	typeref:typename:tmpLexErr
+newTmpErrAt	lexer/lexer.go	/^func (l *Lexer) newTmpErrAt(msg string, col int) tmpLexErr {$/;"	f	struct:lexer.Lexer	typeref:typename:tmpLexErr
+newToken	lexer/lexer.go	/^func (l *Lexer) newToken(literal string, kind token.TokenKind) token.Token {$/;"	f	struct:lexer.Lexer	typeref:typename:token.Token
+newTokenAt	lexer/lexer.go	/^func (l *Lexer) newTokenAt(literal string, kind token.TokenKind, col int) token.Token {$/;"	f	struct:lexer.Lexer	typeref:typename:token.Token
+newUnexpectedTokenErr	parser/parser.go	/^func newUnexpectedTokenErr(got *token.Token, expected []token.TokenKind, lineStr string, line in/;"	f	package:parser	typeref:typename:UnexpectedTokenErr
+num	lexer/lexer.go	/^func (l *Lexer) num() (*token.Token, *tmpLexErr) {$/;"	f	struct:lexer.Lexer	typeref:typename:(*token.Token, *tmpLexErr)
+output	cmd/build.go	/^var output string$/;"	v	package:cmd	typeref:typename:string
+parser	parser/parser.go	/^package parser$/;"	p
+peek	lexer/lexer.go	/^func (l *Lexer) peek() rune {$/;"	f	struct:lexer.Lexer	typeref:typename:rune
+peek	parser/parser.go	/^func (p *Parser) peek() *token.Token {$/;"	f	struct:parser.Parser	typeref:typename:*token.Token
+peekNext	lexer/lexer.go	/^func (l *Lexer) peekNext() rune {$/;"	f	struct:lexer.Lexer	typeref:typename:rune
+pos	lexer/lexer.go	/^	pos      int$/;"	m	struct:lexer.Lexer	typeref:typename:int
+pos	parser/parser.go	/^	pos    int$/;"	m	struct:parser.Parser	typeref:typename:int
+previous	parser/parser.go	/^func (p *Parser) previous() *token.Token {$/;"	f	struct:parser.Parser	typeref:typename:*token.Token
+primary	parser/parser.go	/^func (p *Parser) primary() (ast.Expr, error) {$/;"	f	struct:parser.Parser	typeref:typename:(ast.Expr, error)
+rootCmd	cmd/root.go	/^var rootCmd = &cobra.Command{$/;"	v	package:cmd
+source	lexer/lexer.go	/^	source   []rune$/;"	m	struct:lexer.Lexer	typeref:typename:[]rune
+string	lexer/lexer.go	/^func (l *Lexer) string() (*token.Token, *tmpLexErr) {$/;"	f	struct:lexer.Lexer	typeref:typename:(*token.Token, *tmpLexErr)
+synchronize	parser/parser.go	/^func (p *Parser) synchronize() {$/;"	f	struct:parser.Parser
+term	parser/parser.go	/^func (p *Parser) term() (ast.Expr, error) {$/;"	f	struct:parser.Parser	typeref:typename:(ast.Expr, error)
+tmpLexErr	lexer/lexer.go	/^type tmpLexErr struct {$/;"	s	package:lexer
+token	token/token.go	/^package token$/;"	p
+tokens	parser/parser.go	/^	tokens []token.Token$/;"	m	struct:parser.Parser	typeref:typename:[]token.Token
+unary	parser/parser.go	/^func (p *Parser) unary() (ast.Expr, error) {$/;"	f	struct:parser.Parser	typeref:typename:(ast.Expr, error)
+varDecl	parser/parser.go	/^func (p *Parser) varDecl() (ast.Expr, error) {$/;"	f	struct:parser.Parser	typeref:typename:(ast.Expr, error)
+whileExpr	parser/parser.go	/^func (p *Parser) whileExpr() (ast.Expr, error) {$/;"	f	struct:parser.Parser	typeref:typename:(ast.Expr, error)
