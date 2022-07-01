@@ -14,6 +14,7 @@ const (
 	INT = iota
 	FLOAT
 	STRING
+	FN
 )
 
 func NewKind(t token.TokenKind) ValueKind {
@@ -24,6 +25,8 @@ func NewKind(t token.TokenKind) ValueKind {
 		return FLOAT
 	case token.STRINGK:
 		return STRING
+	case token.FN:
+		return FN
 	}
 	panic("unreachable")
 }
@@ -36,6 +39,8 @@ func (k ValueKind) String() string {
 		return "FLOAT"
 	case STRING:
 		return "STRING"
+	case FN:
+		return "FN"
 	default:
 		return "INVALID"
 	}

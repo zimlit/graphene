@@ -47,7 +47,7 @@ func (m MsgErr) Error() string {
 	fmt.Fprintf(&str, "%s:%d:%d\n", m.fname, m.line, m.col)
 	b(&str, "  |\n")
 	b(&str, "%d | ", m.line)
-	fmt.Fprint(&str, m.lineStr)
+	fmt.Fprintln(&str, m.lineStr)
 	b(&str, "  |")
 	for i := 0; i < m.col; i++ {
 		fmt.Fprint(&str, " ")
@@ -124,6 +124,9 @@ func (u UnexpectedTokenErr) Error() string {
 	b(&str, "  |\n")
 	b(&str, "%d | ", u.line)
 	fmt.Fprint(&str, u.lineStr)
+  if u.lineStr[len(u.lineStr) - 1] != '\n' {
+    fmt.Fprintf(&str, "\n")
+  }
 	b(&str, "  |")
 	if u.got == nil {
 		for i := -1; i < u.col; i++ {
@@ -242,30 +245,24 @@ func (p *Parser) synchronize() {
 	}
 }
 
-func (p *Parser) Parse() (<-chan ParseResult, int) {
+func (p *Parser) Parse(c chan ParseResult) {
 	exprs := []ast.Expr{}
 	var errs ParseError = nil
-	c := make(chan ParseResult)
-	imps := 1
 
-	go func() {
-		for p.pos < len(p.tokens) {
-			expr, err := p.expression()
-			if err != nil {
-				errs = append(errs, err)
-				p.synchronize()
-			}
-			exprs = append(exprs, expr)
+	for p.pos < len(p.tokens) {
+		expr, err := p.expression()
+		if err != nil {
+			errs = append(errs, err)
+			p.synchronize()
 		}
+		exprs = append(exprs, expr)
+	}
 
-		if errs != nil {
-			c <- ParseResult{nil, errs}
-		}
+	if errs != nil {
+		c <- ParseResult{nil, errs}
+	}
 
-		c <- ParseResult{exprs, nil}
-	}()
-
-	return c, imps
+	c <- ParseResult{exprs, nil}
 }
 
 func (p *Parser) expression() (ast.Expr, error) {
@@ -395,11 +392,21 @@ func (p *Parser) varDecl() (ast.Expr, error) {
 		if !c {
 			return nil, err
 		}
-		c, err = p.consume(token.INTK, token.FLOATK, token.STRINGK)
+		c, err = p.consume(token.INTK, token.FLOATK, token.STRINGK, token.FN)
 		if !c {
 			return nil, err
 		}
 		kind := ast.NewKind(p.previous().Kind)
+		if p.previous().Kind == token.FN {
+			c, err = p.consume(token.LPAREN)
+			if !c {
+				return nil, err
+			}
+			c, err = p.consume(token.RPAREN)
+			if !c {
+				return nil, err
+			}
+		}
 		var value ast.Expr = ast.NewLiteral("nil", token.NIL)
 		if p.match(token.EQ) {
 			value, err = p.expression()

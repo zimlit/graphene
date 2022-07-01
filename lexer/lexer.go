@@ -38,7 +38,8 @@ func (l *LexErr) Error() string {
 	fmt.Fprintf(&str, "%s:%d:%d\n", l.fname, l.line, l.col)
 	b(&str, "  |\n")
 	b(&str, "%d | ", l.line)
-	fmt.Fprint(&str, l.lineStr)
+	fmt.Fprintln(&str, l.lineStr)
+
 	b(&str, "  |")
 	for i := 0; i < l.col; i++ {
 		fmt.Fprint(&str, " ")
@@ -89,6 +90,7 @@ func NewLexer(source string, fname string) Lexer {
 	l.keywords["mut"] = token.MUT
 	l.keywords["while"] = token.WHILE
 	l.keywords["string"] = token.STRINGK
+	l.keywords["fn"] = token.FN
 
 	return l
 }
@@ -177,7 +179,11 @@ func (l *Lexer) string() (*token.Token, *tmpLexErr) {
 	l.advance()
 
 Exit:
-	for ; l.pos < len(l.source); l.advance() {
+	for ; ; l.advance() {
+		if l.pos >= len(l.source) {
+			err := l.newTmpErr("Unclosed string")
+			return nil, &err
+		}
 		switch l.peek() {
 		case '"':
 			break Exit
@@ -324,6 +330,8 @@ func (l *Lexer) Lex() ([]token.Token, []string, LexErrs) {
 			}
 		case ' ':
 		case '\t':
+		case '\r':
+		case '\v':
 		case '\n':
 			l.lineStr += "\n"
 			for _, err := range tmps {
