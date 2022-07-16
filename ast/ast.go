@@ -6,45 +6,58 @@ import (
 	"zimlit/graphene/token"
 )
 
-type ValueKind uint8
+type ValueKind interface {
+	String() string
+	vkind()
+}
 
-type Exprs []Expr
+type Const uint8
 
 const (
-	INT = iota
+	INT Const = iota
 	FLOAT
 	STRING
-	FN
 )
 
-func NewKind(t token.TokenKind) ValueKind {
-	switch t {
-	case token.INTK:
-		return INT
-	case token.FLOATK:
-		return FLOAT
-	case token.STRINGK:
-		return STRING
-	case token.FN:
-		return FN
+func (c Const) vkind() {}
+func (c Const) String() string {
+	switch c {
+	case INT:
+		return "int"
+	case FLOAT:
+		return "float"
+	case STRING:
+		return "string"
 	}
 	panic("unreachable")
 }
 
-func (k ValueKind) String() string {
-	switch k {
-	case INT:
-		return "INT"
-	case FLOAT:
-		return "FLOAT"
-	case STRING:
-		return "STRING"
-	case FN:
-		return "FN"
-	default:
-		return "INVALID"
+type Fn struct {
+	Params []Param
+	Rtype  ValueKind
+}
+
+func (f Fn) vkind() {}
+func (f Fn) String() string {
+	var str strings.Builder
+	fmt.Fprintf(&str, "(fn %s (", f.Rtype.String())
+	for i, e := range f.Params {
+		fmt.Fprintf(&str, "%s", e.Kind.String())
+		if i+1 != len(f.Params) {
+			fmt.Fprint(&str, " ")
+		}
+	}
+	fmt.Fprintf(&str, "))")
+	return str.String()
+}
+func NewFnT(params []Param, rtype ValueKind) Fn {
+	return Fn{
+		Params: params,
+		Rtype:  rtype,
 	}
 }
+
+type Exprs []Expr
 
 type Expr interface {
 	String() string
@@ -292,11 +305,12 @@ func NewParam(name string, kind ValueKind) Param {
 type FnExpr struct {
 	Params []Param
 	Body   []Expr
+	Rtype  ValueKind
 }
 
 func (f FnExpr) String() string {
 	var str strings.Builder
-	fmt.Fprintf(&str, "(fn (")
+	fmt.Fprintf(&str, "(fn %s (", f.Rtype.String())
 	for i, e := range f.Params {
 		fmt.Fprintf(&str, "%s: %s", e.Name, e.Kind.String())
 		if i+1 != len(f.Params) {
@@ -318,9 +332,10 @@ func (f FnExpr) Accept(v Visitor[any]) any {
 	return v.visitFnExpr(f)
 }
 
-func NewFn(params []Param, body []Expr) FnExpr {
+func NewFn(params []Param, body []Expr, rtype ValueKind) FnExpr {
 	return FnExpr{
 		Params: params,
 		Body:   body,
+		Rtype:  rtype,
 	}
 }
