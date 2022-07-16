@@ -39,6 +39,7 @@ const (
 	STRING
 	STRINGK
 	FN
+	COMMA
 )
 
 func (t TokenKind) String() string {
@@ -101,6 +102,8 @@ func (t TokenKind) String() string {
 		return "string"
 	case FN:
 		return "fn"
+	case COMMA:
+		return ","
 	default:
 		return "INVALID"
 	}

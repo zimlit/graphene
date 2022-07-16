@@ -47,7 +47,6 @@ func (k ValueKind) String() string {
 }
 
 type Expr interface {
-	expr()
 	String() string
 	Accept(v Visitor[any]) any
 }
@@ -58,7 +57,6 @@ type Binary struct {
 	Right    Expr
 }
 
-func (b Binary) expr() {}
 func (b Binary) String() string {
 	return fmt.Sprintf(
 		"(%s %s %s)",
@@ -84,7 +82,6 @@ type Unary struct {
 	Right    Expr
 }
 
-func (u Unary) expr() {}
 func (u Unary) String() string {
 	return fmt.Sprintf(
 		"(%s %s)",
@@ -109,7 +106,6 @@ type Literal struct {
 	Kind  token.TokenKind
 }
 
-func (l Literal) expr() {}
 func (l Literal) String() string {
 	return fmt.Sprint(l.Value)
 }
@@ -123,6 +119,7 @@ type Visitor[R any] interface {
 	visitIfExpr(i IfExpr) R
 	visitAssignment(a Assignment) R
 	visitWhileExpr(w WhileExpr) R
+	visitFnExpr(f FnExpr) R
 }
 
 func (l Literal) Accept(v Visitor[any]) any {
@@ -137,7 +134,6 @@ type Grouping struct {
 	Inner Expr
 }
 
-func (g Grouping) expr() {}
 func (g Grouping) String() string {
 	return g.Inner.String()
 }
@@ -157,7 +153,6 @@ type VarDecl struct {
 	Value  Expr
 }
 
-func (v VarDecl) expr() {}
 func (v VarDecl) String() string {
 	if !v.is_mut {
 		return fmt.Sprintf("(let %s %s %s)", v.Name, v.Kind.String(), v.Value.String())
@@ -186,7 +181,6 @@ type IfExpr struct {
 	Else      []Expr
 }
 
-func (i IfExpr) expr() {}
 func (i IfExpr) String() string {
 	var str strings.Builder
 
@@ -238,7 +232,6 @@ type Assignment struct {
 	Value Expr
 }
 
-func (a Assignment) expr() {}
 func (a Assignment) String() string {
 	return fmt.Sprintf("(= %s %s)", a.Name, a.Value.String())
 }
@@ -259,7 +252,6 @@ type WhileExpr struct {
 	Body []Expr
 }
 
-func (w WhileExpr) expr() {}
 func (w WhileExpr) String() string {
 	var str strings.Builder
 	fmt.Fprintf(&str, "(while %s (", w.Cond.String())
@@ -282,5 +274,53 @@ func NewWhileExpr(cond Expr, body []Expr) WhileExpr {
 	return WhileExpr{
 		Cond: cond,
 		Body: body,
+	}
+}
+
+type Param struct {
+	Name string
+	Kind ValueKind
+}
+
+func NewParam(name string, kind ValueKind) Param {
+	return Param{
+		Name: name,
+		Kind: kind,
+	}
+}
+
+type FnExpr struct {
+	Params []Param
+	Body   []Expr
+}
+
+func (f FnExpr) String() string {
+	var str strings.Builder
+	fmt.Fprintf(&str, "(fn (")
+	for i, e := range f.Params {
+		fmt.Fprintf(&str, "%s: %s", e.Name, e.Kind.String())
+		if i+1 != len(f.Params) {
+			fmt.Fprint(&str, " ")
+		}
+	}
+	fmt.Fprint(&str, ") (")
+	for i, e := range f.Body {
+		fmt.Fprint(&str, e)
+		if i+1 != len(f.Body) {
+			fmt.Fprint(&str, " ")
+		}
+	}
+	fmt.Fprintf(&str, "))")
+	return str.String()
+}
+
+func (f FnExpr) Accept(v Visitor[any]) any {
+	return v.visitFnExpr(f)
+}
+
+func NewFn(params []Param, body []Expr) FnExpr {
+	return FnExpr{
+		Params: params,
+		Body:   body,
 	}
 }

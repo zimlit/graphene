@@ -124,9 +124,9 @@ func (u UnexpectedTokenErr) Error() string {
 	b(&str, "  |\n")
 	b(&str, "%d | ", u.line)
 	fmt.Fprint(&str, u.lineStr)
-  if u.lineStr[len(u.lineStr) - 1] != '\n' {
-    fmt.Fprintf(&str, "\n")
-  }
+	if u.lineStr[len(u.lineStr)-1] != '\n' {
+		fmt.Fprintf(&str, "\n")
+	}
 	b(&str, "  |")
 	if u.got == nil {
 		for i := -1; i < u.col; i++ {
@@ -415,6 +415,70 @@ func (p *Parser) varDecl() (ast.Expr, error) {
 			}
 		}
 		return ast.NewVarDecl(name.Literal, kind, value, is_mut), nil
+	}
+
+	return p.fn()
+}
+
+func (p *Parser) fn() (ast.Expr, error) {
+	if p.match(token.LPAREN) {
+		params := []ast.Param{}
+		if p.match(token.IDENT) {
+			name := p.previous().Literal
+			_, err := p.consume(token.COLON)
+			if err != nil {
+				return nil, err
+			}
+			_, err = p.consume(token.INTK, token.FLOATK, token.STRINGK, token.FN)
+			if err != nil {
+				return nil, err
+			}
+			kind := ast.NewKind(p.previous().Kind)
+			params = append(params, ast.NewParam(name, kind))
+			for p.match(token.COMMA) {
+				_, err := p.consume(token.IDENT)
+				if err != nil {
+					return nil, err
+				}
+				name = p.previous().Literal
+				_, err = p.consume(token.COLON)
+				if err != nil {
+					return nil, err
+				}
+				_, err = p.consume(token.INTK, token.FLOATK, token.STRINGK, token.FN)
+				if err != nil {
+					return nil, err
+				}
+				kind = ast.NewKind(p.previous().Kind)
+				params = append(params, ast.NewParam(name, kind))
+			}
+		}
+		_, err := p.consume(token.RPAREN)
+		if err != nil {
+			return nil, err
+		}
+
+		var body []ast.Expr
+		for {
+			b, err := p.expression()
+			if p.peek() == nil {
+				return nil, newUnexpectedTokenErr(nil, []token.TokenKind{token.END}, p.lines[p.previous().Line-1], p.previous().Line, p.previous().Col, p.fname)
+			}
+			if err != nil {
+				if p.peek().Kind == token.END {
+					break
+				}
+
+				return nil, err
+			}
+			body = append(body, b)
+		}
+
+		c, err := p.consume(token.END)
+		if !c {
+			return nil, err
+		}
+		return ast.NewFn(params, body), nil
 	}
 
 	return p.assignment()

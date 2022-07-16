@@ -295,6 +295,8 @@ func (l *Lexer) Lex() ([]token.Token, []string, LexErrs) {
 			toks = append(toks, l.newToken("(", token.LPAREN))
 		case ')':
 			toks = append(toks, l.newToken(")", token.RPAREN))
+		case ',':
+			toks = append(toks, l.newToken(",", token.COMMA))
 		case '=':
 			if l.match('=') {
 				toks = append(toks, l.newTokenAt("==", token.EQEQ, l.col-1))
