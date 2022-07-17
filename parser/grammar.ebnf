@@ -10,7 +10,7 @@ if         = "if" expression expression* (("else if" expression expression*)*? "
 
 varDecl    = "let" "mut"? IDENT ":" TYPE "=" expression
            | fn ;
-fn = "(" (IDENT ":" Type (", " IDENT: TYPE))? ")" expression* "end"
+fn = FN IDENT? "(" (IDENT ":" Type (", " IDENT: TYPE))? ")" ":" TYPE expression* "end"
    | assignment ;
 assignment = IDENT "=" expression
            | equality;

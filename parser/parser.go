@@ -460,6 +460,10 @@ func (p *Parser) varDecl() (ast.Expr, error) {
 
 func (p *Parser) fn() (ast.Expr, error) {
 	if p.match(token.FN) {
+		name := ""
+		if p.match(token.IDENT) {
+			name = p.previous().Literal
+		}
 		_, err := p.consume(token.LPAREN)
 		if err != nil {
 			return nil, err
@@ -526,7 +530,11 @@ func (p *Parser) fn() (ast.Expr, error) {
 		if !c {
 			return nil, err
 		}
-		return ast.NewFn(params, body, kind), nil
+		f := ast.NewFn(params, body, kind)
+		if name != "" {
+			return ast.NewVarDecl(name, ast.NewFnT(params, kind), f, false), nil
+		}
+		return f, nil
 	}
 
 	return p.assignment()
