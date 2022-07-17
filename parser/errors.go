@@ -59,7 +59,15 @@ func (m MsgErr) Error() string {
 	fmt.Fprintf(&str, "%s:%d:%d\n", m.fname, m.line, m.col)
 	b(&str, "  |\n")
 	b(&str, "%d | ", m.line)
-	fmt.Fprintln(&str, m.lineStr)
+	if m.lineStr[0] == '\n' {
+		fmt.Fprint(&str, m.lineStr[1:])
+		m.col--
+	} else {
+		fmt.Fprint(&str, m.lineStr)
+	}
+	if m.lineStr[len(m.lineStr)-1] != '\n' {
+		fmt.Fprint(&str, "\n")
+	}
 	b(&str, "  |")
 	for i := 0; i < m.col; i++ {
 		fmt.Fprint(&str, " ")
@@ -115,6 +123,7 @@ func (u UnexpectedTokenErr) Error() string {
 	}
 	if u.got == nil {
 		fmt.Fprintf(&err, "EOF")
+		u.line++
 	} else {
 		switch u.got.Kind {
 		case token.INT:
@@ -132,18 +141,28 @@ func (u UnexpectedTokenErr) Error() string {
 	fmt.Fprint(&str, ": ")
 	w(&str, "%s\n", err.String())
 	b(&str, " --> ")
-	fmt.Fprintf(&str, "%s:%d:%d\n", u.fname, u.line, u.col)
+	fmt.Fprintf(&str, "%s:%d:", u.fname, u.line)
+	if u.got == nil {
+		fmt.Fprintln(&str, "0")
+	} else {
+		fmt.Fprintln(&str, u.col)
+	}
 	b(&str, "  |\n")
 	b(&str, "%d | ", u.line)
-	fmt.Fprint(&str, u.lineStr)
-	if u.lineStr[len(u.lineStr)-1] != '\n' {
-		fmt.Fprintf(&str, "\n")
+	if u.got != nil {
+		if u.lineStr[0] == '\n' {
+			fmt.Fprint(&str, u.lineStr[1:])
+			u.col--
+		} else {
+			fmt.Fprint(&str, u.lineStr)
+		}
+	} else {
+		fmt.Fprintln(&str, "")
 	}
+
 	b(&str, "  |")
 	if u.got == nil {
-		for i := -1; i < u.col; i++ {
-			fmt.Fprint(&str, " ")
-		}
+		fmt.Fprint(&str, " ")
 	} else {
 		for i := 0; i < u.col; i++ {
 			fmt.Fprint(&str, " ")

@@ -43,12 +43,12 @@ var buildCmd = &cobra.Command{
 			return
 		}
 		source := string(buf)
-		l := lexer.NewLexer(source, "stdin")
+		l := lexer.NewLexer(source, args[0])
 		toks, lines, errs := l.Lex()
 		if errs != nil {
 			fmt.Print(errs.Error())
 		} else {
-			p := parser.NewParser(toks, lines, "stdin")
+			p := parser.NewParser(toks, lines, args[0])
 			c := make(chan parser.ParseResult)
 			go p.Parse(c)
 			exprs := [][]ast.Expr{}

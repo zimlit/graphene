@@ -50,7 +50,15 @@ func (l *LexErr) Error() string {
 	fmt.Fprintf(&str, "%s:%d:%d\n", l.fname, l.line, l.col)
 	b(&str, "  |\n")
 	b(&str, "%d | ", l.line)
-	fmt.Fprintln(&str, l.lineStr)
+	if l.lineStr[0] == '\n' {
+		fmt.Fprint(&str, l.lineStr[1:])
+		l.col--
+	} else {
+		fmt.Fprint(&str, l.lineStr)
+	}
+	if l.lineStr[len(l.lineStr)-1] != '\n' {
+		fmt.Fprint(&str, "\n")
+	}
 
 	b(&str, "  |")
 	for i := 0; i < l.col; i++ {
