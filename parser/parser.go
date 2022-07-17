@@ -124,9 +124,9 @@ func (u UnexpectedTokenErr) Error() string {
 	b(&str, "  |\n")
 	b(&str, "%d | ", u.line)
 	fmt.Fprint(&str, u.lineStr)
-  if u.lineStr[len(u.lineStr) - 1] != '\n' {
-    fmt.Fprintf(&str, "\n")
-  }
+	if u.lineStr[len(u.lineStr)-1] != '\n' {
+		fmt.Fprintf(&str, "\n")
+	}
 	b(&str, "  |")
 	if u.got == nil {
 		for i := -1; i < u.col; i++ {
@@ -243,6 +243,55 @@ func (p *Parser) synchronize() {
 		}
 		p.advance()
 	}
+}
+
+func (p *Parser) kind() (ast.ValueKind, error) {
+	if p.match(token.INTK) {
+		return ast.INT, nil
+	} else if p.match(token.FLOATK) {
+		return ast.FLOAT, nil
+	} else if p.match(token.STRINGK) {
+		return ast.STRING, nil
+	} else if p.match(token.FN) {
+		_, err := p.consume(token.LPAREN)
+		if err != nil {
+			return nil, err
+		}
+		params := []ast.Param{}
+		kind, err := p.kind()
+		if err != nil {
+			_, err = p.consume(token.RPAREN)
+			if err != nil {
+				return nil, err
+			}
+		}
+		params = append(params, ast.NewParam("", kind))
+		for p.match(token.COMMA) {
+			kind, err := p.kind()
+			if err != nil {
+				return nil, err
+			}
+			params = append(params, ast.NewParam("", kind))
+		}
+		_, err = p.consume(token.RPAREN)
+		if err != nil {
+			return nil, err
+		}
+		_, err = p.consume(token.COLON)
+		if err != nil {
+			return nil, err
+		}
+		kind, err = p.kind()
+		if err != nil {
+			return nil, err
+		}
+		return ast.NewFnT(params, kind), nil
+	}
+
+	if p.peek() == nil {
+		return nil, newUnexpectedTokenErr(p.peek(), []token.TokenKind{token.INTK, token.FLOATK, token.STRINGK, token.FN}, p.lines[p.previous().Line-1], p.previous().Line, p.previous().Col, p.fname)
+	}
+	return nil, newUnexpectedTokenErr(p.peek(), []token.TokenKind{token.INTK, token.FLOATK, token.STRINGK, token.FN}, p.lines[p.peek().Line-1], p.peek().Line, p.peek().Col, p.fname)
 }
 
 func (p *Parser) Parse(c chan ParseResult) {
@@ -392,20 +441,9 @@ func (p *Parser) varDecl() (ast.Expr, error) {
 		if !c {
 			return nil, err
 		}
-		c, err = p.consume(token.INTK, token.FLOATK, token.STRINGK, token.FN)
-		if !c {
+		kind, err := p.kind()
+		if err != nil {
 			return nil, err
-		}
-		kind := ast.NewKind(p.previous().Kind)
-		if p.previous().Kind == token.FN {
-			c, err = p.consume(token.LPAREN)
-			if !c {
-				return nil, err
-			}
-			c, err = p.consume(token.RPAREN)
-			if !c {
-				return nil, err
-			}
 		}
 		var value ast.Expr = ast.NewLiteral("nil", token.NIL)
 		if p.match(token.EQ) {
@@ -415,6 +453,88 @@ func (p *Parser) varDecl() (ast.Expr, error) {
 			}
 		}
 		return ast.NewVarDecl(name.Literal, kind, value, is_mut), nil
+	}
+
+	return p.fn()
+}
+
+func (p *Parser) fn() (ast.Expr, error) {
+	if p.match(token.FN) {
+		name := ""
+		if p.match(token.IDENT) {
+			name = p.previous().Literal
+		}
+		_, err := p.consume(token.LPAREN)
+		if err != nil {
+			return nil, err
+		}
+		params := []ast.Param{}
+		if p.match(token.IDENT) {
+			name := p.previous().Literal
+			_, err := p.consume(token.COLON)
+			if err != nil {
+				return nil, err
+			}
+			kind, err := p.kind()
+			if err != nil {
+				return nil, err
+			}
+			params = append(params, ast.NewParam(name, kind))
+			for p.match(token.COMMA) {
+				_, err := p.consume(token.IDENT)
+				if err != nil {
+					return nil, err
+				}
+				name = p.previous().Literal
+				_, err = p.consume(token.COLON)
+				if err != nil {
+					return nil, err
+				}
+				kind, err := p.kind()
+				if err != nil {
+					return nil, err
+				}
+				params = append(params, ast.NewParam(name, kind))
+			}
+		}
+		_, err = p.consume(token.RPAREN)
+		if err != nil {
+			return nil, err
+		}
+		_, err = p.consume(token.COLON)
+		if err != nil {
+			return nil, err
+		}
+		kind, err := p.kind()
+		if err != nil {
+			return nil, err
+		}
+
+		var body []ast.Expr
+		for {
+			b, err := p.expression()
+			if p.peek() == nil {
+				return nil, newUnexpectedTokenErr(nil, []token.TokenKind{token.END}, p.lines[p.previous().Line-1], p.previous().Line, p.previous().Col, p.fname)
+			}
+			if err != nil {
+				if p.peek().Kind == token.END {
+					break
+				}
+
+				return nil, err
+			}
+			body = append(body, b)
+		}
+
+		c, err := p.consume(token.END)
+		if !c {
+			return nil, err
+		}
+		f := ast.NewFn(params, body, kind)
+		if name != "" {
+			return ast.NewVarDecl(name, ast.NewFnT(params, kind), f, false), nil
+		}
+		return f, nil
 	}
 
 	return p.assignment()
