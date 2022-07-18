@@ -14,6 +14,7 @@ package ast
 
 import (
 	"fmt"
+	"strings"
 	"zimlit/graphene/token"
 )
 
@@ -118,4 +119,34 @@ func (g Grouping) Accept(v Visitor[any]) any {
 
 func NewGrouping(inner Expr) Grouping {
 	return Grouping{inner}
+}
+
+type Call struct {
+	Callee    Expr
+	Arguments []Expr
+}
+
+func (c Call) String() string {
+	var str strings.Builder
+	fmt.Fprintf(&str, "(%s ", c.Callee.String())
+	for i, arg := range c.Arguments {
+		fmt.Fprint(&str, arg.String())
+		if i != len(c.Arguments)-1 {
+			fmt.Fprint(&str, " ")
+		}
+	}
+	fmt.Fprint(&str, ")")
+
+	return str.String()
+}
+
+func (c Call) Accept(v Visitor[any]) any {
+	return v.visitCallExpr(c)
+}
+
+func NewCall(callee Expr, arguments []Expr) Call {
+	return Call{
+		Callee:    callee,
+		Arguments: arguments,
+	}
 }

@@ -85,4 +85,5 @@ type Visitor[R any] interface {
 	visitAssignment(a Assignment) R
 	visitWhileExpr(w WhileExpr) R
 	visitFnExpr(f FnExpr) R
+	visitCallExpr(c Call) R
 }

@@ -68,7 +68,50 @@ func (p *Parser) unary() (ast.Expr, error) {
 		return ast.NewUnary(*operator, right), nil
 	}
 
-	return p.primary()
+	return p.call()
+}
+
+func (p *Parser) call() (ast.Expr, error) {
+	expr, err := p.primary()
+	if err != nil {
+		return nil, err
+	}
+
+	for {
+		if p.match(token.LPAREN) {
+			expr, err = p.finishCall(expr)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			break
+		}
+	}
+
+	return expr, nil
+}
+
+func (p *Parser) finishCall(callee ast.Expr) (ast.Expr, error) {
+	args := []ast.Expr{}
+	if !p.check(token.RPAREN) {
+		for {
+			x, err := p.expression()
+			if err != nil {
+				return nil, err
+			}
+			args = append(args, x)
+			if !p.match(token.COMMA) {
+				break
+			}
+		}
+	}
+
+	_, err := p.consume(token.RPAREN)
+	if err != nil {
+		return nil, err
+	}
+
+	return ast.NewCall(callee, args), nil
 }
 
 func (p *Parser) primary() (ast.Expr, error) {
