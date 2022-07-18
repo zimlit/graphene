@@ -108,7 +108,6 @@ Here's a blank template to get started: To avoid retyping too much info. Do a se
 
 ### Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them.
 * golang 1.18 or later
 * git
 
@@ -120,6 +119,7 @@ This is an example of how to list things you need to use the software and how to
 ```
 2. build and install
 ``` sh
+    cd graphene
     go install zimlit/graphene
 ```
 3. make sure ~/go/bin is in your $PATH variable
@@ -137,7 +137,7 @@ This is an example of how to list things you need to use the software and how to
 
 <!-- ROADMAP -->
 <!-- ## Roadmap -->
-<!-- 
+<!--
 See the [open issues](https://github.com/zimlit/graphene/issues) for a full list of proposed features (and known issues). -->
 
 <!-- <p align="right">(<a href="#top">back to top</a>)</p> -->
@@ -165,7 +165,7 @@ Don't forget to give the project a star! Thanks again!
 <!-- LICENSE -->
 ## License
 
-Distributed under the MIT License. See `LICENSE` for more information.
+Distributed under GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -182,10 +182,10 @@ Project Link: [https://github.com/zimlit/graphene](https://github.com/zimlit/gra
 
 
 
-<!-- ACKNOWLEDGMENTS -->
+<!-- ACKNOWLEDGMENTS
 ## Acknowledgments
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">back to top</a>)</p> -->
 
 
 
