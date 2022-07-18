@@ -1,7 +1,15 @@
 /*
-Copyright © 2022 NAME HERE <EMAIL ADDRESS>
+	Copyright 2022 Devin Rockwell
 
+	This file is part of Graphene.
+
+	Graphene is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+	Graphene is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License along with Graphene. If not, see <https://www.gnu.org/licenses/>.
 */
+
 package cmd
 
 import (
@@ -35,12 +43,12 @@ var buildCmd = &cobra.Command{
 			return
 		}
 		source := string(buf)
-		l := lexer.NewLexer(source, "stdin")
+		l := lexer.NewLexer(source, args[0])
 		toks, lines, errs := l.Lex()
 		if errs != nil {
 			fmt.Print(errs.Error())
 		} else {
-			p := parser.NewParser(toks, lines, "stdin")
+			p := parser.NewParser(toks, lines, args[0])
 			c := make(chan parser.ParseResult)
 			go p.Parse(c)
 			exprs := [][]ast.Expr{}
@@ -61,7 +69,7 @@ var buildCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(buildCmd)
-  buildCmd.Flags().StringVarP(&output, "output", "o", "", "file to write output to")
+	buildCmd.Flags().StringVarP(&output, "output", "o", "", "file to write output to")
 
 	// Here you will define your flags and configuration settings.
 
