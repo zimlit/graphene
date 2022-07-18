@@ -14,71 +14,9 @@ package lexer
 
 import (
 	"fmt"
-	"strings"
 	"unicode"
 	"zimlit/graphene/token"
-
-	"github.com/fatih/color"
 )
-
-type tmpLexErr struct {
-	col   int
-	line  int
-	msg   string
-	fname string
-}
-
-func (l *tmpLexErr) Error() string { return "" }
-
-type LexErr struct {
-	col     int
-	line    int
-	lineStr string
-	msg     string
-	fname   string
-}
-
-func (l *LexErr) Error() string {
-	r := color.New(color.FgHiRed, color.Bold).FprintfFunc()
-	w := color.New(color.FgHiWhite, color.Bold).FprintfFunc()
-	b := color.New(color.FgHiBlue, color.Bold).FprintfFunc()
-	var str strings.Builder
-	r(&str, "error")
-	fmt.Fprint(&str, ": ")
-	w(&str, "%s\n", l.msg)
-	b(&str, " --> ")
-	fmt.Fprintf(&str, "%s:%d:%d\n", l.fname, l.line, l.col)
-	b(&str, "  |\n")
-	b(&str, "%d | ", l.line)
-	if l.lineStr[0] == '\n' {
-		fmt.Fprint(&str, l.lineStr[1:])
-		l.col--
-	} else {
-		fmt.Fprint(&str, l.lineStr)
-	}
-	if l.lineStr[len(l.lineStr)-1] != '\n' {
-		fmt.Fprint(&str, "\n")
-	}
-
-	b(&str, "  |")
-	for i := 0; i < l.col; i++ {
-		fmt.Fprint(&str, " ")
-	}
-	r(&str, "^ %s\n", l.msg)
-
-	return str.String()
-}
-
-type LexErrs []LexErr
-
-func (l *LexErrs) Error() string {
-	var str strings.Builder
-	for _, err := range *l {
-		fmt.Fprintln(&str, err.Error())
-	}
-
-	return str.String()
-}
 
 type Lexer struct {
 	col      int
@@ -113,84 +51,6 @@ func NewLexer(source string, fname string) Lexer {
 	l.keywords["fn"] = token.FN
 
 	return l
-}
-
-func (l *Lexer) newTmpErr(msg string) tmpLexErr {
-	return tmpLexErr{
-		col:   l.col,
-		line:  l.line,
-		msg:   msg,
-		fname: l.fname,
-	}
-}
-
-func (l *Lexer) newTmpErrAt(msg string, col int) tmpLexErr {
-	return tmpLexErr{
-		col:   col,
-		line:  l.line,
-		msg:   msg,
-		fname: l.fname,
-	}
-}
-
-func (l *Lexer) newLexErr(tmp tmpLexErr) LexErr {
-	return LexErr{
-		col:     tmp.col,
-		line:    tmp.line,
-		msg:     tmp.msg,
-		lineStr: l.lineStr,
-		fname:   tmp.fname,
-	}
-}
-
-func (l *Lexer) newToken(literal string, kind token.TokenKind) token.Token {
-	return token.Token{
-		Kind:    kind,
-		Literal: literal,
-		Line:    l.line,
-		Col:     l.col,
-	}
-}
-
-func (l *Lexer) newTokenAt(literal string, kind token.TokenKind, col int) token.Token {
-	return token.Token{
-		Kind:    kind,
-		Literal: literal,
-		Line:    l.line,
-		Col:     col,
-	}
-}
-
-func (l *Lexer) peek() rune {
-	if l.pos < len(l.source) {
-		return l.source[l.pos]
-	}
-	return '\000'
-}
-
-func (l *Lexer) peekNext() rune {
-	if l.pos < len(l.source)-1 {
-		return l.source[l.pos+1]
-	}
-	return '\000'
-}
-
-func (l *Lexer) advance() {
-	if l.pos < len(l.source) {
-		l.lineStr += string(l.source[l.pos])
-
-	}
-	l.pos++
-	l.col++
-}
-
-func (l *Lexer) match(c rune) bool {
-	if l.peekNext() == c {
-		l.advance()
-		return true
-	}
-
-	return false
 }
 
 func (l *Lexer) string() (*token.Token, *tmpLexErr) {
