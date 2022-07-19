@@ -17,6 +17,18 @@ import (
 	"zimlit/graphene/token"
 )
 
+func (p *Parser) returnExpr() (ast.Expr, error) {
+	if p.match(token.RETURN) {
+		value, err := p.expression()
+		if err != nil {
+			return nil, err
+		}
+		return ast.NewReturn(value), nil
+	}
+
+	return p.whileExpr()
+}
+
 func (p *Parser) whileExpr() (ast.Expr, error) {
 	if p.match(token.WHILE) {
 		cond, err := p.expression()

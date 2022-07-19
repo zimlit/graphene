@@ -1,6 +1,8 @@
 program    = expression* ;
 
-expression = while ;
+expression = return ;
+
+return = "return" expression ;
 
 while      = "while" expression expression* "end"
            | if ;
