@@ -55,7 +55,7 @@ func (p *Parser) Parse(c chan ParseResult) {
 }
 
 func (p *Parser) expression() (ast.Expr, error) {
-	return p.whileExpr()
+	return p.returnExpr()
 }
 
 func (p *Parser) unary() (ast.Expr, error) {

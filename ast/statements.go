@@ -177,3 +177,21 @@ func NewFn(params []Param, body []Expr, rtype ValueKind) FnExpr {
 		Rtype:  rtype,
 	}
 }
+
+type Return struct {
+	Value Expr
+}
+
+func (r Return) String() string {
+	return fmt.Sprintf("(return %s)", r.Value.String())
+}
+
+func (r Return) Accept(v Visitor[any]) any {
+	return v.visitReturnExpr(r)
+}
+
+func NewReturn(value Expr) Return {
+	return Return{
+		Value: value,
+	}
+}

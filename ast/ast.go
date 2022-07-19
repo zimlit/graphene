@@ -86,4 +86,5 @@ type Visitor[R any] interface {
 	visitWhileExpr(w WhileExpr) R
 	visitFnExpr(f FnExpr) R
 	visitCallExpr(c Call) R
+	visitReturnExpr(r Return) R
 }

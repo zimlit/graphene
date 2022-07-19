@@ -49,6 +49,7 @@ func NewLexer(source string, fname string) Lexer {
 	l.keywords["while"] = token.WHILE
 	l.keywords["string"] = token.STRINGK
 	l.keywords["fn"] = token.FN
+	l.keywords["return"] = token.RETURN
 
 	return l
 }
