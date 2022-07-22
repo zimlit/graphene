@@ -115,7 +115,7 @@ Here's a blank template to get started: To avoid retyping too much info. Do a se
 
 1. clone the repo
 ``` sh
-    git clone https://github.com/zimlit/graphene
+    git clone https://github.com/graphenelang/graphene
 ```
 2. build and install
 ``` sh
