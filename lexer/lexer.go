@@ -224,6 +224,7 @@ func (l *Lexer) Lex() ([]token.Token, []string, LexErrs) {
 			l.line++
 			l.lineStr = ""
 			tmps = []tmpLexErr{}
+			l.col = 1
 		default:
 			if unicode.IsDigit(l.peek()) {
 				t, err := l.num()

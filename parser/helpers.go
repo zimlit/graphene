@@ -65,10 +65,14 @@ func (p *Parser) consume(types ...token.TokenKind) (bool, error) {
 		return true, nil
 	} else {
 		t := p.peek()
-		if t == nil {
-			return false, newUnexpectedTokenErr(p.peek(), types, p.lines[p.previous().Line-1], p.previous().Line, p.previous().Col, p.fname)
+		if p.previous().Line < t.Line {
+			return false, newUnexpectedTokenErr(t, types, p.lines[p.previous().Line-1], p.previous().Line, p.previous().Col+1, p.fname)
 		}
-		return false, newUnexpectedTokenErr(p.peek(), types, p.lines[p.peek().Line-1], p.peek().Line, p.peek().Col, p.fname)
+		if t == nil {
+			return false, newUnexpectedTokenErr(t, types, p.lines[p.previous().Line-1], p.previous().Line, p.previous().Col, p.fname)
+		}
+
+		return false, newUnexpectedTokenErr(t, types, p.lines[t.Line-1], t.Line, t.Col, p.fname)
 	}
 }
 
@@ -78,14 +82,19 @@ func (p *Parser) synchronize() {
 	for p.pos < len(p.tokens) {
 		switch p.peek().Kind {
 		case token.LET:
+			p.advance()
 			return
 		case token.IF:
+			p.advance()
 			return
 		case token.ELSE:
+			p.advance()
 			return
 		case token.ELSEIF:
+			p.advance()
 			return
 		case token.END:
+			p.advance()
 			return
 		}
 		p.advance()
