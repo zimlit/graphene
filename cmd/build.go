@@ -13,7 +13,6 @@
 package cmd
 
 import (
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"zimlit/graphene/ast"
@@ -31,37 +30,38 @@ var buildCmd = &cobra.Command{
 	Short: "Builds the directory passed in [path] as a graphene project",
 	Long:  ``,
 	Args: func(cmd *cobra.Command, args []string) error {
-		if len(args) != 1 {
-			return errors.New("can only take one path as argument")
-		}
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		buf, err := ioutil.ReadFile(args[0])
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		source := string(buf)
-		l := lexer.NewLexer(source, args[0])
-		toks, lines, errs := l.Lex()
-		if errs != nil {
-			fmt.Print(errs.Error())
-		} else {
-			p := parser.NewParser(toks, lines, args[0])
-			c := make(chan parser.ParseResult)
-			go p.Parse(c)
-			exprs := [][]ast.Expr{}
-			parse_res := <-c
-			if parse_res.Err != nil {
-				fmt.Println(parse_res.Err.Error())
-			} else {
-				exprs = append(exprs, parse_res.Exprs)
+		for _, arg := range args {
+			buf, err := ioutil.ReadFile(arg)
+			if err != nil {
+				fmt.Println(err)
+				return
 			}
-			for _, x := range exprs {
-				for _, expr := range x {
-					fmt.Println(expr.String())
+			source := string(buf)
+			l := lexer.NewLexer(source, arg)
+			toks, lines, errs := l.Lex()
+			if errs != nil {
+				fmt.Print(errs.Error())
+			} else {
+				p := parser.NewParser(toks, lines, arg)
+				c := make(chan parser.ParseResult)
+				go p.Parse(c)
+				exprs := [][]ast.Expr{}
+				parse_res := <-c
+				if parse_res.Err != nil {
+					fmt.Println(parse_res.Err.Error())
+				} else {
+					exprs = append(exprs, parse_res.Exprs)
 				}
+				fmt.Printf("%s:\n", arg)
+				for _, x := range exprs {
+					for _, expr := range x {
+						fmt.Println(expr.String())
+					}
+				}
+				fmt.Println()
 			}
 		}
 	},
